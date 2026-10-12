@@ -1,95 +1,96 @@
-# Platform Kuis Magang (dengan pengawasan kamera)
-
-Isi folder:
+# Platform Kuis Magang v2
 
 | File | Fungsi |
 |---|---|
-| `index.html` | Halaman kuis untuk peserta |
-| `admin.html` | Halaman laporan untuk pembimbing (dilindungi PIN) |
-| `config.js` | Alamat API dan setelan sensitivitas deteksi |
-| `apps-script/Code.gs` | Server di Google Sheets: soal, timer, nilai, log, foto |
+| `index.html` | Halaman kuis peserta (termasuk mode uji `?uji=1` dan pratinjau admin) |
+| `admin.html` | Panel admin: Monitor, Bank Soal, Impor Soal, Pengaturan, Peserta, Hasil, Penyimpanan |
+| `config.js` | Hanya berisi `API_URL`, yaitu URL Web App Apps Script |
+| `apps-script/Code.gs` | Server di Google Sheets |
 
-Alurnya: peserta membuka `index.html` → soal diambil dari Google Sheets → jawaban, log kejadian, dan foto disimpan ke Sheets dan Google Drive milikmu → kamu melihat hasilnya di `admin.html`.
+Semua pengaturan (topik, jadwal, durasi, pengawasan, akun, PIN) dilakukan dari **admin.html**. Kode tidak perlu diubah.
 
 ---
 
-## 1. Siapkan Google Sheets bank soal
+## Memperbarui dari versi sebelumnya
 
-1. Upload `bank_soal_gnss.xlsx` ke Google Drive, buka, lalu pilih **File → Simpan sebagai Google Spreadsheet**.
-2. Di sheet **Bank Soal**, pilih kolom **N (Pakai)**, lalu **Sisipkan → Kotak centang**. Centang 50 soal pilihanmu.
-3. Upload isi `gambar_gnss.zip` (12 file PNG) ke satu folder Google Drive. Buka folder itu dan salin **ID folder** dari URL, yaitu bagian setelah `/folders/`.
+1. **Apps Script:** hapus seluruh isi `Kode.gs`, tempel `apps-script/Code.gs` yang baru, lalu simpan.
+2. **(Disarankan) Aktifkan Drive API** supaya fitur "hapus permanen" bisa dipakai: di editor Apps Script, klik **Layanan +** di panel kiri, pilih **Drive API**, lalu klik **Tambahkan**.
+3. Pilih fungsi **setup** lalu klik **▷ Jalankan**. Izinkan akses jika diminta (ada izin baru untuk pembersihan otomatis terjadwal).
+4. **Terapkan → Kelola deployment → ✏️ → Versi: Versi baru → Terapkan.** URL `/exec` tidak berubah.
+5. **GitHub:** upload `index.html`, `admin.html`, dan `README.md`. **Jangan upload `config.js`**, karena config.js lama di GitHub sudah berisi URL API-mu dan tetap kompatibel.
+6. Buka `admin.html` lalu masuk dengan PIN admin.
 
-## 2. Pasang server (Apps Script)
+`setup()` aman dijalankan berulang kali. Pengaturan lama dipindahkan otomatis: "Kuis dibuka: Ya" menjadi "Mode akses: Dibuka".
 
-1. Di Google Sheets tadi: **Ekstensi → Apps Script**.
-2. Hapus isi `Code.gs` bawaan, tempel isi `apps-script/Code.gs`, lalu simpan.
-3. Pilih fungsi **setup** di toolbar, lalu klik **Jalankan**. Izinkan akses saat diminta.
-   Ini akan membuat sheet `Sesi`, `Hasil`, `Log`, folder Drive **Snapshot Kuis Magang**, dan menambah baris pengaturan baru.
-4. Buka sheet **Pengaturan** dan isi:
-   - **Folder gambar (ID)**: ID folder dari langkah 1.3
-   - **PIN admin**: ganti dari `1234`
-   - **Token peserta**: kode yang kamu bagikan ke peserta saat kuis
-   - **Kuis dibuka**: `Ya` atau `Tidak`
-5. **Terapkan → Deployment baru → jenis: Aplikasi web**
-   - Jalankan sebagai: **Saya**
-   - Yang memiliki akses: **Siapa saja**
-   - Salin **URL aplikasi web** (berakhiran `/exec`).
+## Pemasangan baru (dari nol)
 
-> Kalau nanti `Code.gs` diubah: **Terapkan → Kelola deployment → Edit → Versi baru**. URL tetap sama.
+1. Upload `bank_soal_gnss.xlsx` ke Drive, lalu simpan sebagai Google Spreadsheet.
+2. Ekstensi → Apps Script, tempel `Code.gs`, aktifkan Drive API (opsional), lalu jalankan `setup`.
+3. Terapkan sebagai **Aplikasi web**: Jalankan sebagai **Saya**, Akses **Siapa saja**. Salin URL `/exec`.
+4. Isi `API_URL` di `config.js`, lalu upload semua file ke GitHub Pages.
+5. Buka `admin.html` dengan PIN awal `1234`, lalu langsung ganti PIN di tab Pengaturan → Keamanan.
 
-## 3. Pasang halaman kuis (GitHub Pages)
+---
 
-1. Buka `config.js`, lalu ganti `API_URL` dengan URL dari langkah 2.5.
-2. Push folder ini ke repo GitHub. Di repo: **Settings → Pages → Branch: main / (root)**.
-3. Alamat yang dipakai:
-   - Peserta: `https://<username>.github.io/<repo>/`
-   - Kamu: `https://<username>.github.io/<repo>/admin.html`
+## Tab admin
 
-Kamera hanya bisa jalan di HTTPS. GitHub Pages sudah HTTPS.
+**Monitor**: status kuis, tombol buka/tutup cepat, dan kartu per peserta.
+- Foto kamera dan tangkapan layar diperbarui tiap 10–30 detik.
+- Progres jawaban, sisa waktu, dan "terakhir aktif" (berwarna merah jika sinyal hilang).
+- Jumlah kejadian dan kejadian terakhir.
+- Aksi per peserta: **+5/+10 menit**, **Paksa kumpulkan**, **Izinkan mengulang**, **Lihat hasil**.
 
-## 4. Uji coba sebelum hari H (penting)
+**Bank Soal**
+- Pilih soal dengan centang, lalu klik **Simpan pilihan**.
+- **Pilih otomatis** mengikuti komposisi Mudah/Sedang/Sulit.
+- Ada filter tingkat, subtopik, dan pencarian.
+- **Edit/Hapus soal**. Kalau kunci diubah, kamu ditawari untuk menilai ulang hasil yang sudah ada.
+- 👁 **Pratinjau** satu soal atau seluruh pilihan, persis seperti tampilan peserta (tanpa kamera, tidak tercatat).
 
-1. Buka `.../index.html?debug=1` di laptop yang akan dipakai, lalu kerjakan kuis sebagai peserta.
-   Panel hijau di pojok kiri bawah menampilkan angka deteksi langsung: `yaw` (toleh), `pitch` (tunduk), `eye` (arah mata).
-2. Coba menunduk melihat HP, menoleh, keluar dari kamera, dan pindah aplikasi. Lalu cek hasilnya di `admin.html`.
-3. Kalau terlalu sensitif atau kurang sensitif, ubah angka di bagian `DETEKSI` dalam `config.js`.
-4. Setelah uji coba, hapus baris uji di sheet **Hasil**, **Sesi**, dan **Log**.
+**Impor Soal**
+- Upload **ZIP** (Excel + gambar), **Excel** saja, atau **gambar** saja.
+- Pratinjau dan validasi dulu sebelum disimpan. Yang diperiksa: kunci, opsi kosong, gambar hilang, ID ganda, dan soal kembar.
+- Gambar otomatis dikecilkan dan disimpan di subfolder per topik.
+- Unduh template Excel, ekspor bank soal, dan tambah soal manual.
 
-## 5. Hari pelaksanaan
+**Pengaturan**
+- Judul, topik aktif, jumlah soal, durasi, komposisi, acak soal dan opsi.
+- **Jadwal**: Ditutup / Dibuka sekarang / Terjadwal (jam buka dan jam tutup). Pada jam tutup, peserta yang masih mengerjakan otomatis dikumpulkan.
+- **Pengawasan**: kamera wajib, sensitivitas, durasi minimal kejadian, foto rutin, pantauan langsung, bagikan layar (Tidak/Opsional/Wajib), rekam video kamera/layar.
+- Hapus foto dan video otomatis setelah N hari, folder gambar, dan ganti PIN.
 
-- Set **Kuis dibuka = Ya**, lalu bagikan link dan token.
-- Peserta mengisi nama dan token, mengizinkan kamera, kalibrasi 5 detik, lalu kuis berjalan dalam layar penuh selama 60 menit.
-- Kalau laptop peserta mati atau browser tertutup, peserta cukup membuka link lagi dan memasukkan nama yang sama. Kuis berlanjut dengan sisa waktu yang tetap berjalan, dan kejadian ini tercatat sebagai "Halaman dimuat ulang".
-- Setelah selesai, set **Kuis dibuka = Tidak**.
-- Peserta tidak melihat nilai. Nilai hanya muncul di `admin.html` dan sheet **Hasil**.
+**Peserta**: ubah nama, buat kode baru 🔄, aktif/nonaktif, tambah akun, rekap nilai per topik, dan **Cetak kartu akun**.
 
-## 6. Yang dicatat sebagai indikasi kecurangan
+**Hasil**
+- Daftar nilai per topik dan ekspor CSV.
+- **Detail** per peserta: timeline kejadian, foto, jawaban per soal, dan **rekaman video** (klik waktu kejadian untuk melompat ke detik itu).
+- **Analisis soal**: persentase benar dan sebaran jawaban, dengan peringatan jika ada opsi lain yang lebih banyak dipilih daripada kunci.
+- **Nilai ulang** menggunakan kunci terbaru.
 
-| Kejadian | Cara deteksi |
+**Penyimpanan**
+- Ukuran foto dan video per peserta.
+- Bisa menghapus foto rutin saja, semua foto, video, atau semuanya. Bisa juga menghapus file yang lebih lama dari N hari.
+- **Unduh ZIP** sebelum menghapus.
+- Foto pantauan Monitor **tidak** disimpan di Drive. Gambar soal tidak ikut terhapus.
+
+## Perkiraan pemakaian data per peserta (60 menit)
+
+| Fitur | Data |
 |---|---|
-| Wajah tidak terdeteksi | Tidak ada wajah di kamera ≥ 3 detik (kemungkinan meninggalkan tempat) |
-| Lebih dari satu orang | Ada ≥ 2 wajah atau orang di kamera |
-| Menunduk / pandangan ke bawah | Posisi kepala atau mata turun dibanding saat kalibrasi ≥ 3 detik (kemungkinan melihat HP, buku, atau catatan) |
-| Menoleh ke samping / mendongak | Kepala berpaling dari posisi kalibrasi ≥ 3 detik |
-| HP terdeteksi / buku terdeteksi | Objek HP atau buku terlihat di kamera |
-| Keluar dari jendela kuis | Pindah tab, aplikasi, atau jendela lain |
-| Keluar layar penuh | Menekan Esc atau keluar dari layar penuh |
-| Copy/paste, tombol terlarang | Ctrl+C/V, PrintScreen, F12, dan sejenisnya |
-| Kamera mati, monitor tambahan | Kamera terputus, atau laptop tersambung ke layar kedua |
+| Foto kejadian | ± 1–2 MB |
+| Pantauan kamera + layar (tiap 15 dtk) | ± 9–10 MB |
+| Rekam video kamera | ± 60–70 MB |
+| Rekam video layar | ± 40–60 MB |
 
-Setiap kejadian disertai detik mulai dan selesai, serta foto saat kejadian. Ada juga foto acak berkala sebagai pembanding. Skor risiko dihitung dari jenis dan lamanya kejadian: **Rendah** < 15, **Sedang** 15–39, **Tinggi** ≥ 40.
+## Mode khusus
 
-## 7. Batasan yang perlu dipahami
+- `index.html?uji=1`: mode uji dengan **PIN admin**. Kamera dilewati, bagikan layar opsional, dan hasil bertanda [UJI].
+- `index.html?debug=1`: menampilkan angka deteksi wajah untuk menyetel sensitivitas.
+- Pratinjau: dibuka dari tombol 👁 di admin. Tidak ada yang tercatat.
 
-- Halaman web **tidak bisa memblokir** aplikasi lain. Yang bisa dilakukan adalah mendeteksi dan mencatat saat peserta keluar dari kuis.
-- Hasil deteksi adalah **indikasi**, bukan bukti. Orang yang berpikir sambil menunduk juga bisa tercatat. Selalu cek fotonya.
-- HP atau buku hanya terdeteksi kalau terlihat di kamera. Indikator utamanya tetap arah kepala dan pandangan.
-- Gunakan **Chrome atau Edge versi terbaru**. Pada laptop yang sangat lambat, deteksi bisa berkurang frekuensinya.
+## Batasan
 
-## 8. Ganti topik (fotogrametri, LiDAR, USV, …)
-
-Tambahkan soal baru ke sheet **Bank Soal** dengan kolom **Topik** yang sesuai, centang **Pakai**, lalu ubah **Topik aktif** di sheet **Pengaturan**. Kode tidak perlu diubah.
-
-## Mengulang kuis untuk satu peserta
-
-Di sheet **Sesi**, hapus baris peserta tersebut atau ubah statusnya. Setelah itu, peserta bisa mulai lagi dengan token.
+- Halaman web tidak bisa **memblokir** aplikasi lain. Yang bisa dilakukan adalah mendeteksi, memotret, dan menampilkan layar ke pembimbing.
+- Hasil deteksi adalah **indikasi**, bukan bukti pasti. Selalu cek foto/video.
+- Bagikan layar dan rekaman memerlukan **Chrome/Edge di laptop**.
+- Pantauan Monitor diperbarui berkala (bukan video live), karena Apps Script tidak bisa mengalirkan video.

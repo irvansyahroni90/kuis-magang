@@ -8,49 +8,51 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="config.js"></script>
 <style>
-  :root{
-    --bg:#f3f5f8; --card:#fff; --ink:#1b2430; --muted:#5d6b7a; --line:#dde3ea;
-    --pri:#1f5fa8; --pri-soft:#e6eef8; --ok:#2e8b57; --warn:#c77700; --bad:#c0392b;
-    --r:14px;
-  }
+  :root{--bg:#f3f5f8;--card:#fff;--ink:#1b2430;--muted:#5d6b7a;--line:#dde3ea;--pri:#1f5fa8;--pri-soft:#e6eef8;--ok:#2e8b57;--ok-soft:#e8f5e9;--warn:#c77700;--warn-soft:#fff4e0;--bad:#c0392b;--bad-soft:#fdecea;--r:14px}
   *{box-sizing:border-box}
   body{margin:0;font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-user-select:none;user-select:none}
   button{font:inherit;cursor:pointer}
   .hidden{display:none!important}
-  .wrap{max-width:720px;margin:48px auto;padding:0 16px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px}
-  h1{font-size:24px;margin:0 0 6px} h2{font-size:18px;margin:0 0 12px}
-  .muted{color:var(--muted)}
+  .wrap{max-width:720px;margin:40px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+  h1{font-size:24px;margin:0 0 6px}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}
+  .muted{color:var(--muted)}.small{font-size:13px}
   label.f{display:block;font-weight:600;margin:16px 0 6px}
   input[type=text],input[type=password]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;-webkit-user-select:text;user-select:text}
   .btn{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:600}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
   .btn.ghost{background:transparent;color:var(--pri);border:1px solid var(--pri)}
   .btn.bad{background:var(--bad)}
   .rules{background:var(--pri-soft);border-radius:10px;padding:14px 18px;margin:18px 0;font-size:14px;line-height:1.6}
   .rules ul{margin:6px 0 0;padding-left:20px}
   .err{color:var(--bad);font-weight:600;margin-top:12px;min-height:1.2em}
   .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-
-  /* setup kamera */
-  .camwrap{position:relative;width:100%;max-width:480px;aspect-ratio:4/3;background:#111;border-radius:12px;overflow:hidden;margin:16px auto}
+  .status{border-radius:10px;padding:10px 14px;margin:10px 0 4px;font-size:14px;font-weight:600}
+  .status.dibuka{background:var(--ok-soft);color:var(--ok)}.status.menunggu{background:var(--warn-soft);color:var(--warn)}.status.ditutup,.status.selesai{background:var(--bad-soft);color:var(--bad)}
+  .step{border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}
+  .step.done{border-color:var(--ok);background:#f6fbf7}
+  .tick{color:var(--ok)}
+  .camwrap{position:relative;width:100%;max-width:440px;aspect-ratio:4/3;background:#111;border-radius:12px;overflow:hidden;margin:12px auto}
   .camwrap video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
   .camwrap .guide{position:absolute;inset:18% 28%;border:3px dashed rgba(255,255,255,.6);border-radius:50%}
   .camstat{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;padding:6px 10px;border-radius:8px}
   .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:10px 0}
   .bar>i{display:block;height:100%;width:0;background:var(--pri);transition:width .2s}
-
-  /* kuis */
   #quiz{display:grid;grid-template-columns:1fr 300px;gap:20px;max-width:1200px;margin:20px auto;padding:0 20px}
-  .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  body.hp #quiz{grid-template-columns:1fr;max-width:400px;padding:0 10px;gap:12px}
+  body.hp .side{display:contents}body.hp .c-timer{order:-1}body.hp .side .card{margin-bottom:0}
+  .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px}
   .qno{font-weight:700;color:var(--pri)}
   .qtext{font-size:18px;line-height:1.6;margin:0 0 16px;white-space:pre-wrap}
+  body.hp .qtext{font-size:16px}
   .qimg{max-width:100%;max-height:340px;display:block;margin:0 auto 18px;border:1px solid var(--line);border-radius:10px;background:#fff}
   .opt{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;font-size:16px;line-height:1.5;color:var(--ink)}
   .opt:hover{border-color:var(--pri)}
   .opt b{flex:0 0 32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--pri-soft);color:var(--pri)}
-  .opt.sel{border-color:var(--pri);background:var(--pri-soft)}
-  .opt.sel b{background:var(--pri);color:#fff}
+  .opt.sel{border-color:var(--pri);background:var(--pri-soft)}.opt.sel b{background:var(--pri);color:#fff}
+  .opt.kunci{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+  .opt.kunci::after{content:"✓ kunci";margin-left:auto;color:var(--ok);font-weight:700;font-size:13px;white-space:nowrap}
+  .bahas{background:var(--ok-soft);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5;margin-top:6px}
   .qnav{display:flex;justify-content:space-between;margin-top:18px}
   .side .card{padding:18px;margin-bottom:16px}
   .timer{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;text-align:center}
@@ -59,59 +61,91 @@
   .grid button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 0;font-size:13px;font-weight:600;color:var(--muted)}
   .grid button.done{background:var(--pri);border-color:var(--pri);color:#fff}
   .grid button.cur{outline:2px solid var(--warn);outline-offset:1px}
+  .grid button.benar{background:var(--ok);border-color:var(--ok);color:#fff}.grid button.salah{background:var(--bad);border-color:var(--bad);color:#fff}
   .mini{position:relative;width:100%;aspect-ratio:4/3;background:#111;border-radius:10px;overflow:hidden}
   .mini video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ok);margin-right:6px}
-  .dot.bad{background:var(--bad)}
-  .small{font-size:13px}
-
-  /* banner & overlay */
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ok);margin-right:6px}.dot.bad{background:var(--bad)}
   #banner{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--bad);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.2)}
-  .overlay{position:fixed;inset:0;background:rgba(15,22,32,.88);display:grid;place-items:center;z-index:60}
-  .overlay .card{max-width:440px;text-align:center}
-  #debug{position:fixed;left:10px;bottom:10px;background:rgba(0,0,0,.75);color:#0f0;font:12px monospace;padding:8px 10px;border-radius:8px;z-index:70;white-space:pre}
-  @media (max-width:900px){#quiz{grid-template-columns:1fr}}
+  #banner.info{background:var(--ok)}
+  .overlay{position:fixed;inset:0;background:rgba(15,22,32,.88);display:grid;place-items:center;z-index:60;padding:16px}
+  .overlay .card{max-width:460px;text-align:center}
+  #debug{position:fixed;left:10px;bottom:10px;background:rgba(0,0,0,.75);color:#0f0;font:12px monospace;padding:8px 10px;border-radius:8px;z-index:70;white-space:pre;pointer-events:none}
+  .tag{position:fixed;right:12px;bottom:12px;background:var(--warn);color:#fff;font-weight:700;padding:6px 12px;border-radius:8px;z-index:70}
+  #adminBar{position:sticky;top:0;z-index:40;background:#1b2430;color:#fff;padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px}
+  #adminBar button{background:#2c3a4d;color:#fff;border:1px solid #3e4f66;border-radius:8px;padding:6px 12px;font-size:13px}
+  #adminBar button.on{background:var(--ok);border-color:var(--ok)}
+  #adminBar .sp{flex:1}
+  .hasil-list{text-align:left;max-height:50vh;overflow:auto;margin:12px 0;font-size:14px}
+  .hasil-list div{padding:6px 0;border-bottom:1px solid var(--line)}
+  @media (max-width:900px){#quiz{grid-template-columns:1fr;gap:12px;padding:0 10px}.side{display:contents}.c-timer{order:-1}.side .card{margin-bottom:0}}
 </style>
 </head>
 <body>
+
+<div id="adminBar" class="hidden">
+  <b>👁 Mode pratinjau</b><span class="small" style="opacity:.8">tidak ada yang tercatat</span>
+  <span class="sp"></span>
+  <button id="pvKunci">Tampilkan kunci</button>
+  <button id="pvUkuran">Ukuran: Laptop</button>
+  <button id="pvAcak">Acak ulang</button>
+  <button id="pvJeda">⏸ Jeda timer</button>
+  <button id="pvTutup">Tutup</button>
+</div>
 
 <!-- 1. LOGIN -->
 <div id="scrLogin" class="wrap">
   <div class="card">
     <h1 id="judul">Kuis Magang</h1>
-    <p class="muted">Masukkan nama dan token kuis dari pembimbing.</p>
-    <label class="f" for="inNama">Nama lengkap</label>
-    <input id="inNama" type="text" autocomplete="off" maxlength="60">
-    <label class="f" for="inToken">Token kuis</label>
-    <input id="inToken" type="password" autocomplete="off">
+    <div id="statusKuis" class="status hidden"></div>
+    <p class="muted" id="loginInfo">Masuk dengan username dan kode akses dari pembimbing.</p>
+    <label class="f" for="inNama" id="lblNama">Username</label>
+    <input id="inNama" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="60">
+    <div id="tokenBox">
+      <label class="f" for="inToken">Kode akses</label>
+      <input id="inToken" type="password" autocomplete="off" autocapitalize="characters">
+    </div>
+    <div id="ujiBox" class="hidden">
+      <label class="f" for="inUjiPin">PIN admin (mode uji tanpa kamera)</label>
+      <input id="inUjiPin" type="password" autocomplete="off">
+      <p class="small muted" style="margin:6px 0 0">Mode uji hanya untuk pembimbing. Hasil bertanda [UJI] di laporan.</p>
+    </div>
     <div class="rules">
       <b>Aturan kuis</b>
       <ul>
+        <li>Setiap akun hanya bisa mengerjakan kuis ini <b>satu kali</b>. Jika laptop mati atau halaman tertutup, masuk lagi dengan akun yang sama untuk melanjutkan; jawaban tetap tersimpan dan waktu terus berjalan.</li>
         <li>Waktu pengerjaan dibatasi dan jawaban otomatis terkirim saat waktu habis.</li>
         <li>Kuis berjalan dalam <b>layar penuh</b>. Jangan membuka tab, jendela, atau aplikasi lain.</li>
-        <li><b>Kamera aktif selama kuis</b> untuk memantau kehadiran dan arah pandangan. Foto diambil otomatis saat ada aktivitas mencurigakan dan sesekali secara acak.</li>
+        <li id="ruleKamera"><b>Kamera aktif selama kuis</b>. Foto diambil berkala dan saat ada aktivitas mencurigakan, dan dapat dipantau langsung oleh pembimbing.</li>
+        <li id="ruleLayar" class="hidden">Kamu diminta <b>membagikan seluruh layar</b>; tampilan layar dipantau pembimbing selama kuis.</li>
+        <li id="ruleRekam" class="hidden">Kamera dan/atau layar <b>direkam</b> selama kuis untuk ditinjau pembimbing.</li>
         <li>Dilarang menggunakan HP, buku, catatan, atau bantuan orang lain.</li>
-        <li>Semua aktivitas dicatat dengan waktunya dan ditinjau pembimbing setelah kuis.</li>
       </ul>
     </div>
-    <label class="row small"><input id="inSetuju" type="checkbox"> Saya memahami aturan dan menyetujui penggunaan kamera selama kuis.</label>
+    <label class="row small"><input id="inSetuju" type="checkbox"> Saya memahami aturan dan menyetujui pemantauan selama kuis.</label>
     <div class="err" id="errLogin"></div>
     <button class="btn" id="btnLogin">Lanjut</button>
   </div>
 </div>
 
-<!-- 2. KAMERA & KALIBRASI -->
+<!-- 2. PERSIAPAN -->
 <div id="scrSetup" class="wrap hidden">
   <div class="card">
-    <h2>Persiapan kamera</h2>
-    <p class="muted" id="setupInfo">Izinkan akses kamera. Duduk seperti saat mengerjakan, wajah berada di dalam lingkaran, pencahayaan cukup terang.</p>
-    <div class="camwrap"><video id="vid" playsinline muted></video><div class="guide"></div><div class="camstat" id="camStat">Menyiapkan…</div></div>
-    <div class="bar"><i id="calBar"></i></div>
-    <div class="err" id="errSetup"></div>
-    <div class="row">
+    <h2 id="setupJudul">Persiapan</h2>
+    <p class="muted small" id="setupInfo">Selesaikan langkah berikut, lalu mulai kuis.</p>
+    <div class="step" id="stepCam">
+      <h3><span id="judulCam">1. Kamera & kalibrasi</span> <span class="tick hidden" id="tickCam">✓</span></h3>
+      <p class="muted small">Izinkan kamera. Duduk seperti saat mengerjakan, wajah di dalam lingkaran, pencahayaan cukup terang. Lalu tekan kalibrasi dan lihat ke tengah layar selama 5 detik.</p>
+      <div class="camwrap"><video id="vid" playsinline muted></video><div class="guide"></div><div class="camstat" id="camStat">Menyiapkan…</div></div>
+      <div class="bar"><i id="calBar"></i></div>
       <button class="btn ghost" id="btnKalibrasi" disabled>Mulai kalibrasi (5 detik)</button>
-      <button class="btn" id="btnMulai" disabled>Mulai kuis (layar penuh)</button>
     </div>
+    <div class="step" id="stepLayar">
+      <h3><span id="judulLayar">2. Bagikan layar</span> <span class="tick hidden" id="tickLayar">✓</span></h3>
+      <p class="muted small">Klik tombol di bawah, pilih tab <b>“Seluruh layar” / “Entire screen”</b>, pilih layarnya, lalu klik <b>Bagikan</b>. Jangan memilih jendela atau tab saja.</p>
+      <div class="row"><button class="btn ghost" id="btnLayar">Bagikan seluruh layar</button><span class="small muted" id="layarStat"></span></div>
+    </div>
+    <div class="err" id="errSetup"></div>
+    <button class="btn" id="btnMulai" disabled>Mulai kuis (layar penuh)</button>
   </div>
 </div>
 
@@ -123,6 +157,7 @@
       <p class="qtext" id="qText"></p>
       <img class="qimg hidden" id="qImg" alt="Gambar soal" draggable="false">
       <div id="qOpts"></div>
+      <div id="qBahas" class="bahas hidden"></div>
       <div class="qnav">
         <button class="btn ghost" id="btnPrev">← Sebelumnya</button>
         <button class="btn" id="btnNext">Berikutnya →</button>
@@ -130,10 +165,11 @@
     </div>
   </main>
   <aside class="side">
-    <div class="card"><div class="muted small" style="text-align:center">Sisa waktu</div><div class="timer" id="timer">--:--</div></div>
-    <div class="card">
-      <div class="mini"><video id="vidMini" playsinline muted></video></div>
-      <div class="small" style="margin-top:8px"><span class="dot" id="camDot"></span><span id="camTxt">Kamera aktif</span></div>
+    <div class="card c-timer"><div class="muted small" style="text-align:center">Sisa waktu</div><div class="timer" id="timer">--:--</div></div>
+    <div class="card hidden" id="camCard">
+      <div class="mini" id="miniCam"><video id="vidMini" playsinline muted></video></div>
+      <div class="small" style="margin-top:8px" id="camRow"><span class="dot" id="camDot"></span><span id="camTxt">Kamera aktif</span></div>
+      <div class="small hidden" style="margin-top:4px" id="layarRow"><span class="dot" id="layarDot"></span><span id="layarTxt">Layar dibagikan</span></div>
     </div>
     <div class="card">
       <div class="small muted" style="margin-bottom:8px">Navigasi soal</div>
@@ -142,12 +178,13 @@
     </div>
   </aside>
 </div>
+<video id="vidScr" style="position:fixed;left:-9999px;width:16px;height:9px" playsinline muted></video>
 
 <!-- 4. SELESAI -->
 <div id="scrDone" class="wrap hidden">
   <div class="card" style="text-align:center">
-    <h1>Jawaban terkirim</h1>
-    <p class="muted">Terima kasih. Hasil kuis akan disampaikan oleh pembimbing.</p>
+    <h1 id="doneJudul">Jawaban terkirim</h1>
+    <p class="muted" id="doneTxt">Terima kasih. Hasil kuis akan disampaikan oleh pembimbing.</p>
   </div>
 </div>
 
@@ -156,6 +193,12 @@
   <h2>Kembali ke layar penuh</h2>
   <p class="muted">Kamu keluar dari layar penuh atau jendela kuis. Kejadian ini sudah tercatat.</p>
   <button class="btn" id="btnFull">Kembali ke kuis</button>
+</div></div>
+<div id="ovLayar" class="overlay hidden"><div class="card">
+  <h2>Berbagi layar terhenti</h2>
+  <p class="muted">Kuis mewajibkan berbagi seluruh layar. Kejadian ini sudah tercatat. Bagikan layar lagi untuk melanjutkan.</p>
+  <button class="btn" id="btnLayarLagi">Bagikan seluruh layar</button>
+  <p class="err small" id="errLayarLagi"></p>
 </div></div>
 <div id="ovConfirm" class="overlay hidden"><div class="card">
   <h2>Kumpulkan jawaban?</h2>
@@ -170,152 +213,268 @@
   <p class="muted" id="sendTxt">Jangan tutup halaman ini.</p>
   <button class="btn hidden" id="btnRetry">Coba kirim lagi</button>
 </div></div>
+<div id="ovHasilPv" class="overlay hidden"><div class="card" style="max-width:560px">
+  <h2>Simulasi nilai (tidak disimpan)</h2>
+  <div style="font-size:40px;font-weight:700" id="pvNilai"></div>
+  <p class="muted" id="pvRingkas"></p>
+  <div class="hasil-list" id="pvList"></div>
+  <div class="row" style="justify-content:center"><button class="btn ghost" id="pvLihat">Lihat soal & kunci</button><button class="btn" id="pvUlang">Ulangi pratinjau</button></div>
+</div></div>
 <div id="debug" class="hidden"></div>
+<div id="ujiTag" class="tag hidden">MODE UJI · kamera nonaktif</div>
 
 <script type="module">
-import { FilesetResolver, FaceLandmarker, ObjectDetector } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
-
-const CFG = window.KUIS_CONFIG, D = CFG.DETEKSI;
-const DEBUG = new URLSearchParams(location.search).has("debug");
+const CFG = window.KUIS_CONFIG;
+const QS = new URLSearchParams(location.search);
+const DEBUG = QS.has("debug"), MODE_UJI = QS.has("uji"), PRATINJAU = QS.has("pratinjau");
 const $ = id => document.getElementById(id);
 const show = (id, on = true) => $(id).classList.toggle("hidden", !on);
-$("judul").textContent = CFG.JUDUL; document.title = CFG.JUDUL;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const SENS = {
+  Rendah: { toleh: 0.16, tunduk: 0.10, mata: 0.35, objek: 0.6 },
+  Normal: { toleh: 0.12, tunduk: 0.07, mata: 0.25, objek: 0.5 },
+  Tinggi: { toleh: 0.09, tunduk: 0.05, mata: 0.18, objek: 0.4 }
+};
+const MP = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
 /* ---------- API ---------- */
+const BERHENTI = /kode akses|PIN|Nama|dibuka|ditutup|Belum ada soal|tidak ditemukan|sudah mengumpulkan|dinonaktifkan|Sesi admin|Terlalu banyak|Jadwal/;
 async function api(body, tries = 3) {
   let last;
   for (let i = 0; i < tries; i++) {
     try {
       const r = await fetch(CFG.API_URL, { method: "POST", body: JSON.stringify(body) });
       const j = await r.json();
-      if (!j.ok) throw new Error(j.error || "Gagal");
+      if (!j.ok) { const e = new Error(j.error || "Gagal"); e.server = true; throw e; }
       return j;
-    } catch (e) { last = e; if (/Token|Nama|belum dibuka|Belum ada soal|tidak ditemukan/.test(e.message)) break; await new Promise(r => setTimeout(r, 1500 * (i + 1))); }
+    } catch (e) { last = e; if (e.server && BERHENTI.test(e.message)) break; if (i < tries - 1) await sleep(1500 * (i + 1)); }
   }
   throw last;
 }
-
-/* ---------- Penyimpanan lokal ---------- */
 const LS = {
   get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   del: k => { try { localStorage.removeItem(k); } catch {} }
 };
-
-/* ---------- Acak deterministik per peserta ---------- */
 function seedFrom(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
 function rng(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function shuffled(arr, seed) { const r = rng(seed), a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const fmtWaktu = d => { d = Math.max(0, Math.floor(d)); const h = Math.floor(d / 3600), m = Math.floor(d % 3600 / 60), s = d % 60; return (h ? h + ":" : "") + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0"); };
+const ABCDE = ["A", "B", "C", "D", "E"];
 
 /* ---------- State ---------- */
-let S = { sessionId: null, nama: "", soal: [], jawab: {}, cur: 0, startEpoch: 0, durasi: 0, berjalan: false, kirim: false };
-let stream = null, face = null, obj = null;
-let base = null; // hasil kalibrasi
+let S = { sessionId: null, soal: [], jawab: {}, cur: 0, deadline: 0, startEpoch: Date.now(), berjalan: false, kirim: false, uji: false, pv: false };
+let AW = { kamera: true, sens: "Normal", minDur: 3, rutin: 5, pantau: true, intPantau: 15, layar: "Tidak", rekamKam: false, rekamLay: false, acakOpsi: true };
+let TH = SENS.Normal;
+let stream = null, scrStream = null, face = null, obj = null, base = null, layarOk = false;
 
-/* ---------- 1. Login ---------- */
-const saved = LS.get("kuis_sesi");
-if (saved && saved.sessionId) { $("inNama").value = saved.nama || ""; $("inSetuju").checked = true; }
+if (PRATINJAU) mulaiPratinjau(); else initLogin();
+
+/* ================= 0. PRATINJAU (khusus admin) ================= */
+async function mulaiPratinjau() {
+  show("scrLogin", false); show("adminBar");
+  const adm = LS.get("kuis_admin");
+  if (!adm || !adm.token || adm.exp < Date.now()) return pesanSelesai("Pratinjau tidak tersedia", "Buka pratinjau dari halaman admin setelah masuk dengan PIN.");
+  const req = LS.get("kuis_preview") || {};
+  const ids = QS.get("id") ? [QS.get("id")] : (req.ids && req.ids.length ? req.ids : null);
+  let r;
+  try { r = await api({ action: "admin_preview", token: adm.token, ids, topik: req.topik || null }, 2); }
+  catch (e) { return pesanSelesai("Pratinjau gagal dimuat", e.message); }
+  document.title = "Pratinjau · " + r.judul;
+  S.pv = true; S.pvData = r; S.pvKunci = false; S.pvJeda = false;
+  AW.acakOpsi = r.acakOpsi;
+  siapkanPratinjau(Date.now().toString());
+  show("quiz");
+  setInterval(tick, 500);
+}
+function siapkanPratinjau(seed) {
+  const r = S.pvData;
+  S.sessionId = "pv-" + seed;
+  const urut = r.acakSoal && r.soal.length > 1 ? shuffled(r.soal, seedFrom(seed)) : r.soal;
+  S.soal = urut.map(q => ({ ...q, order: AW.acakOpsi ? shuffled(ABCDE, seedFrom(S.sessionId + q.id)) : ABCDE.slice() }));
+  S.jawab = {}; S.cur = 0; S.deadline = Date.now() + r.durasi * 1000; S.berjalan = true; S.kirim = false; S.hasilPv = false;
+  S.pvJeda = false; $("pvJeda").textContent = "⏸ Jeda timer"; $("pvJeda").classList.remove("on");
+  buatGrid(); tampil(0);
+}
+$("pvKunci").onclick = () => { S.pvKunci = !S.pvKunci; $("pvKunci").classList.toggle("on", S.pvKunci); tampil(S.cur); };
+$("pvUkuran").onclick = () => { const hp = document.body.classList.toggle("hp"); $("pvUkuran").textContent = "Ukuran: " + (hp ? "HP" : "Laptop"); };
+$("pvAcak").onclick = () => { show("ovHasilPv", false); siapkanPratinjau(Date.now().toString()); };
+$("pvJeda").onclick = () => {
+  S.pvJeda = !S.pvJeda;
+  if (S.pvJeda) S.pvSisa = S.deadline - Date.now(); else S.deadline = Date.now() + S.pvSisa;
+  $("pvJeda").textContent = S.pvJeda ? "▶ Lanjutkan timer" : "⏸ Jeda timer"; $("pvJeda").classList.toggle("on", S.pvJeda);
+};
+$("pvTutup").onclick = () => { window.close(); setTimeout(() => pesanSelesai("Pratinjau ditutup", "Tab ini boleh ditutup."), 200); };
+$("pvLihat").onclick = () => { show("ovHasilPv", false); tampil(0); };
+$("pvUlang").onclick = () => { show("ovHasilPv", false); siapkanPratinjau(Date.now().toString()); };
+function hasilPratinjau() {
+  S.berjalan = false; S.hasilPv = true;
+  let benar = 0; const list = [];
+  S.soal.forEach((q, i) => {
+    const j = S.jawab[q.id], ok = j === q.kunci; if (ok) benar++;
+    const huruf = x => x ? ABCDE[q.order.indexOf(x)] : "–";
+    list.push(`<div>${ok ? "✅" : j ? "❌" : "⬜"} <b>${i + 1}.</b> ${esc(q.soal.slice(0, 90))}${q.soal.length > 90 ? "…" : ""} <span class="muted small">(jawab ${huruf(j)}, kunci ${huruf(q.kunci)})</span></div>`);
+  });
+  $("pvNilai").textContent = Math.round(benar / S.soal.length * 1000) / 10;
+  $("pvRingkas").textContent = `${benar} benar dari ${S.soal.length} soal · ${Object.keys(S.jawab).length} dijawab`;
+  $("pvList").innerHTML = list.join("");
+  show("ovHasilPv"); tampil(S.cur);
+}
+
+/* ================= 1. LOGIN ================= */
+function initLogin() {
+  if (MODE_UJI) {
+    show("tokenBox", false); show("ujiBox");
+    $("lblNama").textContent = "Nama penguji";
+    $("loginInfo").textContent = "Mode uji tanpa kamera (khusus pembimbing).";
+  } else {
+    const saved = LS.get("kuis_akun");
+    if (saved && saved.username) $("inNama").value = saved.username;
+  }
+  muatInfo();
+}
+let infoT = null;
+async function muatInfo() {
+  try {
+    const r = await api({ action: "info" }, 1);
+    $("judul").textContent = r.judul; document.title = r.judul;
+    if (r.awas) { show("ruleKamera", r.awas.kamera); show("ruleLayar", r.awas.layar !== "Tidak"); show("ruleRekam", !!r.awas.rekam); }
+    const st = r.status, el = $("statusKuis");
+    el.className = "status " + st.kode; el.textContent = (r.topik ? "Topik: " + r.topik + " · " : "") + st.pesan;
+    clearInterval(infoT);
+    if (st.kode === "menunggu") {
+      const target = Date.now() + st.dalam * 1000;
+      infoT = setInterval(() => {
+        const d = (target - Date.now()) / 1000;
+        if (d <= 0) { clearInterval(infoT); muatInfo(); return; }
+        el.textContent = "Topik: " + r.topik + " · " + st.pesan + " Dimulai dalam " + fmtWaktu(d);
+      }, 1000);
+    }
+  } catch { /* status opsional */ }
+}
 
 $("btnLogin").onclick = async () => {
   $("errLogin").textContent = "";
-  const nama = $("inNama").value.trim(), token = $("inToken").value.trim();
-  const lanjutLama = saved && saved.sessionId && saved.nama === nama;
+  const isian = $("inNama").value.trim(), kode = $("inToken").value.trim().toUpperCase(), ujiPin = $("inUjiPin").value.trim();
   if (!$("inSetuju").checked) return $("errLogin").textContent = "Centang persetujuan terlebih dahulu.";
-  if (nama.length < 2) return $("errLogin").textContent = "Nama wajib diisi.";
-  if (!token && !lanjutLama) return $("errLogin").textContent = "Token wajib diisi.";
+  if (isian.length < 2) return $("errLogin").textContent = MODE_UJI ? "Nama wajib diisi." : "Username wajib diisi.";
+  if (MODE_UJI && !ujiPin) return $("errLogin").textContent = "PIN admin wajib diisi untuk mode uji.";
+  if (!MODE_UJI && !kode) return $("errLogin").textContent = "Kode akses wajib diisi.";
   $("btnLogin").disabled = true; $("btnLogin").textContent = "Memuat soal…";
   try {
-    const r = await api({ action: "start", nama, token, sessionId: lanjutLama ? saved.sessionId : null });
-    S.sessionId = r.sessionId; S.nama = r.nama; S.durasi = r.durasi;
-    S.startEpoch = Date.now() - (r.durasi - r.sisa) * 1000;
-    S.soal = r.soal.map(q => {
-      const order = shuffled(["A", "B", "C", "D", "E"], seedFrom(r.sessionId + q.id));
-      return { ...q, order };
-    });
-    S.jawab = LS.get("kuis_jawab_" + r.sessionId) || {};
+    const r = await api(MODE_UJI ? { action: "start", nama: isian, ujiPin } : { action: "start", username: isian, kode });
+    AW = Object.assign(AW, r.awas || {}); TH = SENS[AW.sens] || SENS.Normal;
+    S.sessionId = r.sessionId; S.nama = r.nama; S.uji = r.uji === true; S.lanjut = r.lanjut;
+    S.deadline = Date.now() + r.sisa * 1000;
+    S.startEpoch = Date.now() - (r.elapsed || 0) * 1000;
+    S.soal = r.soal.map(q => ({ ...q, order: AW.acakOpsi ? shuffled(ABCDE, seedFrom(r.sessionId + q.id)) : ABCDE.slice() }));
+    S.jawab = Object.assign({}, r.jawaban || {}, LS.get("kuis_jawab_" + r.sessionId) || {});
     S.cur = LS.get("kuis_cur_" + r.sessionId) || 0;
-    S.lanjut = r.lanjut;
-    LS.set("kuis_sesi", { sessionId: r.sessionId, nama: r.nama });
+    if (!MODE_UJI) LS.set("kuis_akun", { username: isian });
+    clearInterval(infoT);
     if (r.sisa <= 0) { show("scrLogin", false); return kumpulkan(true); }
     show("scrLogin", false); show("scrSetup");
-    siapkanKamera();
+    $("setupJudul").textContent = S.lanjut ? "Melanjutkan kuis · sisa " + Math.floor(r.sisa / 60) + " menit" : "Persiapan";
+    siapkanLangkah();
   } catch (e) {
     $("errLogin").textContent = e.message || "Gagal terhubung ke server.";
     $("btnLogin").disabled = false; $("btnLogin").textContent = "Lanjut";
   }
 };
 
-/* ---------- 2. Kamera, model, kalibrasi ---------- */
+/* ================= 2. PERSIAPAN ================= */
+const bisaLayar = () => !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+const perluKamera = () => AW.kamera && !S.uji;
+const pakaiLayar = () => AW.layar !== "Tidak" && bisaLayar();
+const wajibLayar = () => AW.layar === "Wajib" && !S.uji;
+function siapkanLangkah() {
+  show("stepCam", perluKamera()); show("stepLayar", pakaiLayar());
+  $("judulLayar").textContent = (perluKamera() ? "2. " : "1. ") + "Bagikan layar" + (wajibLayar() ? "" : " (opsional)");
+  if (wajibLayar() && !bisaLayar()) $("errSetup").textContent = "Browser ini tidak mendukung berbagi layar. Gunakan Chrome atau Edge di laptop.";
+  if (S.uji) $("setupInfo").textContent = "Mode uji: kamera dan deteksi wajah dilewati. Hasil bertanda [UJI] di laporan.";
+  else if (!perluKamera() && !pakaiLayar()) $("setupInfo").textContent = "Siap. Tekan tombol di bawah untuk mulai.";
+  if (perluKamera()) siapkanKamera();
+  cekSiap();
+}
+function cekSiap() {
+  const camOk = !perluKamera() || !!base;
+  const layOk = !wajibLayar() || layarOk;
+  $("btnMulai").disabled = !(camOk && layOk);
+}
+
 async function siapkanKamera() {
   const st = $("camStat");
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false });
-  } catch (e) {
-    $("errSetup").textContent = "Kamera tidak dapat diakses. Izinkan kamera di browser lalu muat ulang halaman.";
-    st.textContent = "Kamera ditolak"; return;
-  }
+  try { stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false }); }
+  catch { $("errSetup").textContent = "Kamera tidak dapat diakses. Izinkan kamera di browser lalu muat ulang halaman."; st.textContent = "Kamera ditolak"; return; }
   for (const v of [$("vid"), $("vidMini")]) { v.srcObject = stream; v.play().catch(() => {}); }
   st.textContent = "Memuat model deteksi…";
   try {
-    const fs = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
-    const mk = async (Cls, opts) => {
-      try { return await Cls.createFromOptions(fs, { ...opts, baseOptions: { ...opts.baseOptions, delegate: "GPU" } }); }
-      catch { return await Cls.createFromOptions(fs, { ...opts, baseOptions: { ...opts.baseOptions, delegate: "CPU" } }); }
-    };
-    face = await mk(FaceLandmarker, {
-      baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task" },
-      runningMode: "VIDEO", numFaces: 3, outputFaceBlendshapes: true
-    });
-    obj = await mk(ObjectDetector, {
-      baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/int8/1/efficientdet_lite0.tflite" },
-      runningMode: "VIDEO", scoreThreshold: 0.35, maxResults: 6, categoryAllowlist: ["cell phone", "book", "person"]
-    });
-  } catch (e) {
-    $("errSetup").textContent = "Model deteksi gagal dimuat. Periksa koneksi internet lalu muat ulang halaman.";
-    st.textContent = "Gagal memuat model"; return;
-  }
-  st.textContent = "Siap. Tekan tombol kalibrasi.";
-  $("btnKalibrasi").disabled = false;
-  if (DEBUG) { show("debug"); setInterval(() => { const m = ukurWajah(); $("debug").textContent = JSON.stringify(m, null, 1) + "\nbase " + JSON.stringify(base); }, 300); }
+    const { FilesetResolver, FaceLandmarker, ObjectDetector } = await import(MP + "/vision_bundle.mjs");
+    const fs = await FilesetResolver.forVisionTasks(MP + "/wasm");
+    const mk = async (Cls, o) => { try { return await Cls.createFromOptions(fs, { ...o, baseOptions: { ...o.baseOptions, delegate: "GPU" } }); } catch { return await Cls.createFromOptions(fs, { ...o, baseOptions: { ...o.baseOptions, delegate: "CPU" } }); } };
+    face = await mk(FaceLandmarker, { baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task" }, runningMode: "VIDEO", numFaces: 3, outputFaceBlendshapes: true });
+    obj = await mk(ObjectDetector, { baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/int8/1/efficientdet_lite0.tflite" }, runningMode: "VIDEO", scoreThreshold: 0.35, maxResults: 6, categoryAllowlist: ["cell phone", "book", "person"] });
+  } catch { $("errSetup").textContent = "Model deteksi gagal dimuat. Periksa koneksi internet lalu muat ulang halaman."; st.textContent = "Gagal memuat model"; return; }
+  st.textContent = "Siap. Tekan tombol kalibrasi."; $("btnKalibrasi").disabled = false;
+  if (DEBUG) { show("debug"); setInterval(() => { $("debug").textContent = JSON.stringify(ukurWajah(), null, 1) + "\nbase " + JSON.stringify(base) + "\nsens " + AW.sens; }, 300); }
 }
-
-/* rasio geometri wajah dari landmark MediaPipe */
 let lastTs = 0;
 function ukurWajah() {
   const v = $("vid");
   if (!face || v.readyState < 2) return null;
   let ts = performance.now(); if (ts <= lastTs) ts = lastTs + 1; lastTs = ts;
-  const r = face.detectForVideo(v, ts);
-  const n = r.faceLandmarks.length;
+  const r = face.detectForVideo(v, ts), n = r.faceLandmarks.length;
   if (n !== 1) return { n };
-  const L = r.faceLandmarks[0];
-  const nose = L[1], top = L[10], chin = L[152], kiri = L[234], kanan = L[454];
-  const yaw = (nose.x - kiri.x) / ((kanan.x - kiri.x) || 1e-6);
-  const pitch = (nose.y - top.y) / ((chin.y - top.y) || 1e-6);
-  let eye = 0;
-  const bs = r.faceBlendshapes && r.faceBlendshapes[0];
+  const L = r.faceLandmarks[0], nose = L[1], top = L[10], chin = L[152], kiri = L[234], kanan = L[454];
+  const yaw = (nose.x - kiri.x) / ((kanan.x - kiri.x) || 1e-6), pitch = (nose.y - top.y) / ((chin.y - top.y) || 1e-6);
+  let eye = 0; const bs = r.faceBlendshapes && r.faceBlendshapes[0];
   if (bs) { const g = k => (bs.categories.find(c => c.categoryName === k) || { score: 0 }).score; eye = (g("eyeLookDownLeft") + g("eyeLookDownRight")) / 2; }
   return { n, yaw: +yaw.toFixed(3), pitch: +pitch.toFixed(3), eye: +eye.toFixed(3) };
 }
-
 $("btnKalibrasi").onclick = () => {
-  $("btnKalibrasi").disabled = true; $("errSetup").textContent = "";
-  $("camStat").textContent = "Lihat ke tengah layar…";
-  const samp = []; const t0 = performance.now();
+  $("btnKalibrasi").disabled = true; $("errSetup").textContent = ""; $("camStat").textContent = "Lihat ke tengah layar…";
+  const samp = [], t0 = performance.now();
   const iv = setInterval(() => {
     const m = ukurWajah(); if (m && m.n === 1) samp.push(m);
     const p = Math.min(1, (performance.now() - t0) / 5000); $("calBar").style.width = (p * 100) + "%";
-    if (p >= 1) {
-      clearInterval(iv);
-      if (samp.length < 10) {
-        $("errSetup").textContent = "Wajah belum terdeteksi stabil. Perbaiki posisi/pencahayaan lalu ulangi.";
-        $("btnKalibrasi").disabled = false; $("camStat").textContent = "Ulangi kalibrasi"; return;
-      }
-      const med = k => { const a = samp.map(s => s[k]).sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; };
-      base = { yaw: med("yaw"), pitch: med("pitch"), eye: med("eye") };
-      $("camStat").textContent = "Kalibrasi berhasil ✓"; $("btnMulai").disabled = false;
-    }
+    if (p < 1) return;
+    clearInterval(iv);
+    if (samp.length < 10) { $("errSetup").textContent = "Wajah belum terdeteksi stabil. Perbaiki posisi/pencahayaan lalu ulangi."; $("btnKalibrasi").disabled = false; $("camStat").textContent = "Ulangi kalibrasi"; return; }
+    const med = k => { const a = samp.map(s => s[k]).sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; };
+    base = { yaw: med("yaw"), pitch: med("pitch"), eye: med("eye") };
+    $("camStat").textContent = "Kalibrasi berhasil ✓"; show("tickCam"); $("stepCam").classList.add("done"); cekSiap();
   }, 120);
+};
+
+/* ---------- Bagikan layar ---------- */
+async function mintaLayar() {
+  const s = await navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: "monitor", frameRate: 2 }, audio: false, monitorTypeSurfaces: "include", selfBrowserSurface: "include", surfaceSwitching: "exclude" });
+  const tr = s.getVideoTracks()[0], jenis = (tr.getSettings && tr.getSettings().displaySurface) || "";
+  if (wajibLayar() && jenis && jenis !== "monitor") { s.getTracks().forEach(t => t.stop()); throw new Error("Yang dibagikan harus SELURUH LAYAR, bukan jendela atau tab. Ulangi dan pilih “Seluruh layar”."); }
+  if (scrStream) scrStream.getTracks().forEach(t => { t.removeEventListener("ended", layarBerhenti); t.stop(); });
+  scrStream = s; $("vidScr").srcObject = s; $("vidScr").play().catch(() => {});
+  tr.addEventListener("ended", layarBerhenti);
+  layarOk = true;
+  if (rekLay) rekLay.ganti(s);
+  return jenis || "layar";
+}
+$("btnLayar").onclick = async () => {
+  $("errSetup").textContent = "";
+  try { const j = await mintaLayar(); $("layarStat").textContent = "✓ Dibagikan (" + (j === "monitor" ? "seluruh layar" : j) + ")"; show("tickLayar"); $("stepLayar").classList.add("done"); }
+  catch (e) { $("errSetup").textContent = e.name === "NotAllowedError" ? "Berbagi layar dibatalkan." : e.message; }
+  cekSiap();
+};
+function layarBerhenti() {
+  layarOk = false;
+  if (!S.berjalan) { show("tickLayar", false); $("stepLayar").classList.remove("done"); $("layarStat").textContent = "Berbagi layar terhenti."; cekSiap(); return; }
+  instan("Berhenti bagikan layar", "peserta menghentikan berbagi layar", true, 2);
+  if (wajibLayar()) show("ovLayar");
+}
+$("btnLayarLagi").onclick = async () => {
+  $("errLayarLagi").textContent = "";
+  try { await mintaLayar(); show("ovLayar", false); try { await document.documentElement.requestFullscreen(); } catch {} }
+  catch (e) { $("errLayarLagi").textContent = e.name === "NotAllowedError" ? "Berbagi layar dibatalkan." : e.message; }
 };
 
 $("btnMulai").onclick = async () => {
@@ -324,34 +483,30 @@ $("btnMulai").onclick = async () => {
   mulaiKuis();
 };
 
-/* ---------- 3. Mesin pencatat kejadian ---------- */
+/* ================= 3. PENCATAT KEJADIAN ================= */
 const now = () => (Date.now() - S.startEpoch) / 1000;
-const antri = [];             // kejadian selesai yang belum terkirim
-const status = {};            // per jenis kejadian berdurasi
-const terakhirInstan = {};
+const antri = [], status = {}, terakhirInstan = {};
 let uidN = 0;
 const uid = () => S.sessionId.slice(0, 8) + "-" + Date.now().toString(36) + "-" + (uidN++);
-
-function foto() {
-  const v = $("vid"); if (!v || v.readyState < 2) return "";
-  const c = document.createElement("canvas"); c.width = 320; c.height = 240;
-  c.getContext("2d").drawImage(v, 0, 0, 320, 240);
-  return c.toDataURL("image/jpeg", 0.6);
+function foto(w = 320, h = 240, q = 0.6) {
+  const v = $("vid"); if (!stream || !v || v.readyState < 2) return "";
+  const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(v, 0, 0, w, h);
+  return c.toDataURL("image/jpeg", q);
 }
-
+function fotoLayar(w = 480, q = 0.5) {
+  const v = $("vidScr"); if (!scrStream || !layarOk || v.readyState < 2 || !v.videoWidth) return "";
+  const h = Math.round(w * v.videoHeight / v.videoWidth);
+  const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(v, 0, 0, w, h);
+  return c.toDataURL("image/jpeg", q);
+}
 let bannerT;
-function banner(txt) { $("banner").textContent = "⚠ " + txt; show("banner"); clearTimeout(bannerT); bannerT = setTimeout(() => show("banner", false), 3500); }
-
-// kejadian berdurasi: aktif terus ≥ minDur → dibuka; nonaktif ≥ lepas → ditutup
-function pantau(jenis, aktif, { minDur = D.durasiMinimal, lepas = 1.5, ket = "", ambilFoto = true } = {}) {
-  const t = now(); const s = status[jenis] || (status[jenis] = {});
+function banner(t, info) { const b = $("banner"); b.textContent = (info ? "ℹ " : "⚠ ") + t; b.classList.toggle("info", !!info); show("banner"); clearTimeout(bannerT); bannerT = setTimeout(() => show("banner", false), 3500); }
+function pantau(jenis, aktif, { minDur = AW.minDur, lepas = 1.5, ket = "", ambilFoto = true } = {}) {
+  const t = now(), s = status[jenis] || (status[jenis] = {});
   if (aktif) {
     if (s.sejak == null) s.sejak = t;
     s.terakhir = t;
-    if (!s.ev && t - s.sejak >= minDur) {
-      s.ev = { uid: uid(), jenis, mulai: +s.sejak.toFixed(1), ket, foto: ambilFoto ? foto() : "" };
-      banner(jenis);
-    }
+    if (!s.ev && t - s.sejak >= minDur) { s.ev = { uid: uid(), jenis, mulai: +s.sejak.toFixed(1), ket, foto: ambilFoto ? foto() : "" }; banner(jenis); }
   } else if (s.sejak != null) {
     const diam = t - (s.terakhir ?? t);
     if (s.ev && diam >= lepas) { s.ev.selesai = +s.terakhir.toFixed(1); antri.push(s.ev); s.ev = null; s.sejak = null; }
@@ -364,22 +519,17 @@ function instan(jenis, ket = "", ambilFoto = true, jeda = 5) {
   antri.push({ uid: uid(), jenis, mulai: +t.toFixed(1), selesai: +t.toFixed(1), ket, foto: ambilFoto ? foto() : "" });
   if (jenis !== "Foto rutin") banner(jenis);
 }
-function tutupSemua() {
-  const t = now();
-  for (const j in status) { const s = status[j]; if (s.ev) { s.ev.selesai = +(s.terakhir ?? t).toFixed(1); antri.push(s.ev); s.ev = null; s.sejak = null; } }
-}
-
+function tutupSemua() { const t = now(); for (const j in status) { const s = status[j]; if (s.ev) { s.ev.selesai = +(s.terakhir ?? t).toFixed(1); antri.push(s.ev); s.ev = null; s.sejak = null; } } }
 let mengirim = false;
 async function kirimAntrian() {
   if (mengirim || !antri.length || S.kirim) return;
   mengirim = true; const batch = antri.splice(0, 10);
-  try { await api({ action: "events", sessionId: S.sessionId, events: batch }, 2); }
-  catch { antri.unshift(...batch); }
+  try { await api({ action: "events", sessionId: S.sessionId, events: batch }, 2); } catch { antri.unshift(...batch); }
   mengirim = false;
 }
 
-/* ---------- 4. Loop deteksi ---------- */
-let objTerakhir = { hp: -99, buku: -99, orang: 0, skor: 0 };
+/* ---------- Deteksi ---------- */
+let objT = { hp: -99, buku: -99, orang: 0 };
 function loopWajah() {
   if (!S.berjalan) return;
   const m = ukurWajah();
@@ -388,107 +538,191 @@ function loopWajah() {
   $("camDot").classList.toggle("bad", !kamOk); $("camTxt").textContent = kamOk ? "Kamera aktif" : "Kamera mati!";
   if (!m) return;
   pantau("Wajah tidak terdeteksi", m.n === 0, { ket: "tidak ada wajah di kamera" });
-  pantau("Lebih dari satu orang", m.n >= 2 || objTerakhir.orang >= 2, { minDur: 1, ket: m.n + " wajah terdeteksi" });
+  pantau("Lebih dari satu orang", m.n >= 2 || objT.orang >= 2, { minDur: 1, ket: m.n + " wajah terdeteksi" });
   const satu = m.n === 1 && base;
   const dYaw = satu ? m.yaw - base.yaw : 0, dPitch = satu ? m.pitch - base.pitch : 0, dEye = satu ? m.eye - base.eye : 0;
-  const tunduk = satu && dPitch > D.ambangTunduk;
+  const tunduk = satu && dPitch > TH.tunduk;
   pantau("Menunduk", tunduk, { ket: `Δ=${dPitch.toFixed(2)}` });
-  pantau("Mendongak", satu && dPitch < -D.ambangTunduk * 1.3, { ket: `Δ=${dPitch.toFixed(2)}` });
-  pantau("Menoleh ke samping", satu && Math.abs(dYaw) > D.ambangToleh, { ket: (dYaw > 0 ? "arah kiri layar" : "arah kanan layar") + ` Δ=${dYaw.toFixed(2)}` });
-  pantau("Pandangan ke bawah", satu && !tunduk && dEye > D.ambangMataBawah, { minDur: D.durasiMinimal + 1, ket: `Δ=${dEye.toFixed(2)}` });
+  pantau("Mendongak", satu && dPitch < -TH.tunduk * 1.3, { ket: `Δ=${dPitch.toFixed(2)}` });
+  pantau("Menoleh ke samping", satu && Math.abs(dYaw) > TH.toleh, { ket: (dYaw > 0 ? "arah kiri layar" : "arah kanan layar") + ` Δ=${dYaw.toFixed(2)}` });
+  pantau("Pandangan ke bawah", satu && !tunduk && dEye > TH.mata, { minDur: AW.minDur + 1, ket: `Δ=${dEye.toFixed(2)}` });
 }
 let lastObjTs = 0;
 function loopObjek() {
   if (!S.berjalan || !obj) return;
   const v = $("vid"); if (v.readyState < 2) return;
   let ts = performance.now(); if (ts <= lastObjTs) ts = lastObjTs + 1; lastObjTs = ts;
-  const r = obj.detectForVideo(v, ts); const t = now();
-  let orang = 0;
+  const r = obj.detectForVideo(v, ts), t = now(); let orang = 0;
   for (const d of r.detections) {
     const c = d.categories[0]; if (!c) continue;
     if (c.categoryName === "person" && c.score >= 0.5) orang++;
-    if (c.score < D.ambangObjek) continue;
-    if (c.categoryName === "cell phone") { objTerakhir.hp = t; objTerakhir.skorHp = c.score; }
-    if (c.categoryName === "book") { objTerakhir.buku = t; objTerakhir.skorBuku = c.score; }
+    if (c.score < TH.objek) continue;
+    if (c.categoryName === "cell phone") { objT.hp = t; objT.skorHp = c.score; }
+    if (c.categoryName === "book") { objT.buku = t; objT.skorBuku = c.score; }
   }
-  objTerakhir.orang = orang;
-  pantau("HP terdeteksi", t - objTerakhir.hp < 2.5, { minDur: 0.5, lepas: 2.5, ket: `keyakinan ${(objTerakhir.skorHp || 0).toFixed(2)}` });
-  pantau("Buku terdeteksi", t - objTerakhir.buku < 2.5, { minDur: 0.5, lepas: 2.5, ket: `keyakinan ${(objTerakhir.skorBuku || 0).toFixed(2)}` });
+  objT.orang = orang;
+  pantau("HP terdeteksi", t - objT.hp < 2.5, { minDur: 0.5, lepas: 2.5, ket: `keyakinan ${(objT.skorHp || 0).toFixed(2)}` });
+  pantau("Buku terdeteksi", t - objT.buku < 2.5, { minDur: 0.5, lepas: 2.5, ket: `keyakinan ${(objT.skorBuku || 0).toFixed(2)}` });
 }
 function loopBrowser() {
   if (!S.berjalan) return;
-  const keluar = document.hidden || !document.hasFocus();
-  const bukanFull = !document.fullscreenElement;
+  const keluar = document.hidden || !document.hasFocus(), bukanFull = !document.fullscreenElement;
   pantau("Keluar dari jendela kuis", keluar, { minDur: 0, lepas: 0.5, ket: document.hidden ? "tab disembunyikan/berpindah" : "jendela lain aktif" });
   pantau("Keluar layar penuh", bukanFull, { minDur: 0, lepas: 0.5 });
-  show("ovFull", bukanFull || keluar);
+  const ovLayarTampil = !$("ovLayar").classList.contains("hidden");
+  show("ovFull", (bukanFull || keluar) && !ovLayarTampil);
+  if (scrStream) { $("layarDot").classList.toggle("bad", !layarOk); $("layarTxt").textContent = layarOk ? "Layar dibagikan" : "Layar tidak dibagikan!"; }
 }
 
-/* ---------- 5. Pembatasan browser ---------- */
-["copy", "cut", "paste"].forEach(ev => document.addEventListener(ev, e => { if (!S.berjalan) return; e.preventDefault(); instan("Copy/paste", ev); }));
-document.addEventListener("contextmenu", e => { if (S.berjalan) e.preventDefault(); });
+/* ---------- Pembatasan ---------- */
+["copy", "cut", "paste"].forEach(ev => document.addEventListener(ev, e => { if (!S.berjalan || S.pv) return; e.preventDefault(); instan("Copy/paste", ev); }));
+document.addEventListener("contextmenu", e => { if (S.berjalan && !S.pv) e.preventDefault(); });
 document.addEventListener("keydown", e => {
-  if (!S.berjalan) return;
+  if (!S.berjalan || S.pv) return;
   const k = e.key.toLowerCase();
   const larang = k === "f12" || (e.ctrlKey && ["c", "v", "x", "p", "u", "s", "f"].includes(k)) || (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(k)) || e.metaKey;
   if (larang) { e.preventDefault(); instan("Tombol terlarang", (e.ctrlKey ? "Ctrl+" : "") + (e.shiftKey ? "Shift+" : "") + e.key); }
 });
-document.addEventListener("keyup", e => { if (S.berjalan && e.key === "PrintScreen") instan("Tombol terlarang", "PrintScreen"); });
+document.addEventListener("keyup", e => { if (S.berjalan && !S.pv && e.key === "PrintScreen") instan("Tombol terlarang", "PrintScreen"); });
 $("btnFull").onclick = async () => { try { await document.documentElement.requestFullscreen(); } catch {} window.focus(); };
 window.addEventListener("pagehide", () => {
-  if (!S.berjalan) return;
+  if (!S.berjalan || S.pv) return;
   tutupSemua();
-  const ringan = antri.map(e => ({ ...e, foto: "" }));
-  try { navigator.sendBeacon(CFG.API_URL, JSON.stringify({ action: "events", sessionId: S.sessionId, events: ringan })); } catch {}
+  try { navigator.sendBeacon(CFG.API_URL, JSON.stringify({ action: "save", sessionId: S.sessionId, jawaban: S.jawab })); } catch {}
+  try { navigator.sendBeacon(CFG.API_URL, JSON.stringify({ action: "events", sessionId: S.sessionId, events: antri.map(e => ({ ...e, foto: "" })) })); } catch {}
 });
 
-/* ---------- 6. Kuis ---------- */
+/* ---------- Detak & pantauan langsung ---------- */
+let beatJalan = false;
+async function beat() {
+  if (!S.berjalan || S.kirim || beatJalan) return;
+  beatJalan = true;
+  const body = { action: "beat", sessionId: S.sessionId, jawaban: S.jawab, terjawab: Object.keys(S.jawab).length, soalKe: S.cur + 1,
+    kamera: !perluKamera() || !!(stream && stream.getVideoTracks().some(t => t.readyState === "live")),
+    layar: scrStream ? (layarOk ? "ya" : "berhenti") : "", fokus: !document.hidden && document.hasFocus() };
+  if (AW.pantau) { body.cam = foto(240, 180, 0.5); body.scr = fotoLayar(480, 0.5); }
+  try {
+    const r = await api(body, 1);
+    if (r.status && r.status !== "berjalan") { beatJalan = false; return diakhiriServer(r.status); }
+    if (typeof r.sisa === "number") {
+      const d = Date.now() + r.sisa * 1000;
+      if (Math.abs(d - S.deadline) > 3000) { if (d > S.deadline + 3000) banner("Waktu ditambah oleh pembimbing", true); S.deadline = d; }
+    }
+  } catch {}
+  beatJalan = false;
+}
+async function diakhiriServer(st) {
+  if (S.kirim) return;
+  S.berjalan = false; S.kirim = true; tutupSemua();
+  pesanSelesai("Kuis telah diakhiri", st === "reset" ? "Sesi kuis ini direset oleh pembimbing." : "Kuis diakhiri oleh pembimbing. Jawaban yang sudah kamu isi tersimpan.");
+  await stopRekam(10000);
+  while (antri.length) { const b = antri.splice(0, 8); try { await api({ action: "events", sessionId: S.sessionId, events: b }, 2); } catch { break; } }
+  bersihkan();
+}
+
+/* ---------- Rekaman video (opsional) ---------- */
+let rekKam = null, rekLay = null;
+function perekam(jenis, src, bps) {
+  const mime = ["video/webm;codecs=vp8", "video/webm", "video/mp4"].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+  if (!mime) return null;
+  let sumber = src, rec = null, urut = 0, aktif = true;
+  const antriUp = []; let upJalan = false;
+  async function up() {
+    if (upJalan) return; upJalan = true;
+    while (antriUp.length) {
+      const it = antriUp[0];
+      try {
+        const b64 = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(",")[1]); fr.readAsDataURL(it.blob); });
+        await api({ action: "video", sessionId: S.sessionId, jenis, urut: it.urut, mulai: it.mulai, mime, data: b64 }, 3);
+        antriUp.shift();
+      } catch { if (!aktif) antriUp.shift(); else await sleep(5000); }
+    }
+    upJalan = false;
+  }
+  function segmen() {
+    if (!aktif) return;
+    if (!sumber || !sumber.getVideoTracks().some(t => t.readyState === "live")) { setTimeout(segmen, 5000); return; }
+    const chunks = [], iniUrut = urut++, iniMulai = +Math.max(0, now()).toFixed(1);
+    try { rec = new MediaRecorder(sumber, { mimeType: mime, videoBitsPerSecond: bps }); } catch { return; }
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => { if (chunks.length) { antriUp.push({ blob: new Blob(chunks, { type: mime }), urut: iniUrut, mulai: iniMulai }); up(); } if (aktif) segmen(); if (rec._selesai) rec._selesai(); };
+    rec.start();
+    setTimeout(() => { if (rec && rec.state === "recording") rec.stop(); }, 60000);
+  }
+  segmen();
+  return {
+    ganti: s => { sumber = s; },
+    stop: () => new Promise(res => { aktif = false; if (rec && rec.state === "recording") { rec._selesai = res; rec.stop(); } else res(); }),
+    tunggu: async ms => { const t0 = Date.now(); while ((antriUp.length || upJalan) && Date.now() - t0 < ms) await sleep(300); }
+  };
+}
+async function stopRekam(tunggu = 0) {
+  const r = [rekKam, rekLay].filter(Boolean);
+  await Promise.all(r.map(x => x.stop()));
+  if (tunggu) await Promise.all(r.map(x => x.tunggu(tunggu)));
+}
+
+/* ================= 4. KUIS ================= */
 function mulaiKuis() {
   S.berjalan = true;
-  if (S.lanjut) instan("Halaman dimuat ulang", "peserta memuat ulang/membuka ulang kuis");
+  if (S.lanjut) instan("Halaman dimuat ulang", "peserta memuat ulang/membuka ulang kuis", false);
   if (window.screen && window.screen.isExtended) instan("Monitor tambahan", "browser melaporkan lebih dari satu layar");
+  const adaCam = perluKamera() && !!stream;
+  show("camCard", adaCam || !!scrStream); show("miniCam", adaCam); show("camRow", adaCam); show("layarRow", !!scrStream);
+  if (S.uji) show("ujiTag");
   buatGrid(); tampil(S.cur);
-  setInterval(loopWajah, 1000 / D.fpsWajah);
-  setInterval(loopObjek, D.intervalObjekMs);
+  if (adaCam) { setInterval(loopWajah, 1000 / 6); setInterval(loopObjek, 1200); }
   setInterval(loopBrowser, 400);
   setInterval(kirimAntrian, 15000);
   setInterval(tick, 500); tick();
-  const rutin = () => { if (S.berjalan) instan("Foto rutin", "", true, 0); setTimeout(rutin, (D.fotoRutinMenit * 60 * 1000) * (0.6 + Math.random() * 0.8)); };
-  setTimeout(rutin, 60000 + Math.random() * 120000);
+  setInterval(beat, (AW.pantau ? AW.intPantau : 30) * 1000); setTimeout(beat, 2000);
+  if (adaCam && AW.rutin > 0) {
+    const rutin = () => { if (S.berjalan) instan("Foto rutin", "", true, 0); setTimeout(rutin, AW.rutin * 60000 * (0.6 + Math.random() * 0.8)); };
+    setTimeout(rutin, 60000 + Math.random() * 120000);
+  }
+  if (AW.rekamKam && adaCam) rekKam = perekam("kamera", stream, 150000);
+  if (AW.rekamLay && scrStream) rekLay = perekam("layar", scrStream, 120000);
 }
 
 function tick() {
-  const sisa = Math.max(0, S.durasi - now());
-  const m = Math.floor(sisa / 60), s = Math.floor(sisa % 60);
-  $("timer").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+  if (S.pv && S.pvJeda) return;
+  const sisa = Math.max(0, (S.deadline - Date.now()) / 1000);
+  $("timer").textContent = fmtWaktu(sisa);
   $("timer").classList.toggle("low", sisa <= 300);
-  if (sisa <= 0 && S.berjalan && !S.kirim) kumpulkan(true);
+  if (sisa <= 0 && S.berjalan && !S.kirim) { if (S.pv) hasilPratinjau(); else kumpulkan(true); }
 }
-
 function buatGrid() {
   const g = $("navGrid"); g.innerHTML = "";
   S.soal.forEach((q, i) => { const b = document.createElement("button"); b.textContent = i + 1; b.onclick = () => tampil(i); g.appendChild(b); });
   segarGrid();
 }
 function segarGrid() {
-  [...$("navGrid").children].forEach((b, i) => { b.classList.toggle("done", !!S.jawab[S.soal[i].id]); b.classList.toggle("cur", i === S.cur); });
+  [...$("navGrid").children].forEach((b, i) => {
+    const q = S.soal[i], hp = !!S.hasilPv;
+    b.classList.toggle("done", !!S.jawab[q.id] && !hp); b.classList.toggle("cur", i === S.cur);
+    b.classList.toggle("benar", hp && S.jawab[q.id] === q.kunci); b.classList.toggle("salah", hp && S.jawab[q.id] !== q.kunci);
+  });
 }
 function tampil(i) {
-  S.cur = Math.max(0, Math.min(S.soal.length - 1, i)); LS.set("kuis_cur_" + S.sessionId, S.cur);
+  S.cur = Math.max(0, Math.min(S.soal.length - 1, i));
+  if (!S.pv) LS.set("kuis_cur_" + S.sessionId, S.cur);
   const q = S.soal[S.cur];
-  $("qNo").textContent = "Soal " + (S.cur + 1);
+  $("qNo").textContent = "Soal " + (S.cur + 1) + (S.pv ? " · " + q.id + (q.tingkat ? " · " + q.tingkat : "") + (q.subtopik ? " · " + q.subtopik : "") : "");
   $("qProg").textContent = Object.keys(S.jawab).length + " dari " + S.soal.length + " terjawab";
   $("qText").textContent = q.soal;
   if (q.gambar) { $("qImg").src = q.gambar; show("qImg"); } else show("qImg", false);
   const box = $("qOpts"); box.innerHTML = "";
+  const tampilKunci = S.pv && (S.pvKunci || S.hasilPv);
   q.order.forEach((asli, idx) => {
-    const b = document.createElement("button"); b.className = "opt" + (S.jawab[q.id] === asli ? " sel" : "");
-    const huruf = document.createElement("b"); huruf.textContent = "ABCDE"[idx];
-    const teks = document.createElement("span"); teks.textContent = q.opsi[asli];
-    b.append(huruf, teks);
-    b.onclick = () => { S.jawab[q.id] = asli; LS.set("kuis_jawab_" + S.sessionId, S.jawab); tampil(S.cur); };
+    const b = document.createElement("button");
+    b.className = "opt" + (S.jawab[q.id] === asli ? " sel" : "") + (tampilKunci && asli === q.kunci ? " kunci" : "");
+    const h = document.createElement("b"); h.textContent = ABCDE[idx];
+    const t = document.createElement("span"); t.textContent = q.opsi[asli];
+    b.append(h, t);
+    b.onclick = () => { if (S.hasilPv || !S.berjalan) return; S.jawab[q.id] = asli; if (!S.pv) { LS.set("kuis_jawab_" + S.sessionId, S.jawab); jadwalSimpan(); } tampil(S.cur); };
     box.appendChild(b);
   });
+  if (tampilKunci && q.bahas) { $("qBahas").textContent = "Pembahasan: " + q.bahas; show("qBahas"); } else show("qBahas", false);
   $("btnPrev").disabled = S.cur === 0;
   $("btnNext").textContent = S.cur === S.soal.length - 1 ? "Selesai ✓" : "Berikutnya →";
   segarGrid();
@@ -497,37 +731,53 @@ $("btnPrev").onclick = () => tampil(S.cur - 1);
 $("btnNext").onclick = () => S.cur === S.soal.length - 1 ? konfirmasi() : tampil(S.cur + 1);
 $("btnKumpul").onclick = konfirmasi;
 function konfirmasi() {
+  if (S.hasilPv) return show("ovHasilPv");
   const kosong = S.soal.length - Object.keys(S.jawab).length;
-  $("confirmTxt").textContent = kosong ? `Masih ada ${kosong} soal yang belum dijawab. Jawaban tidak bisa diubah setelah dikumpulkan.` : "Semua soal sudah dijawab. Jawaban tidak bisa diubah setelah dikumpulkan.";
+  $("confirmTxt").textContent = (kosong ? `Masih ada ${kosong} soal yang belum dijawab. ` : "Semua soal sudah dijawab. ") + (S.pv ? "(Pratinjau: tidak disimpan.)" : "Jawaban tidak bisa diubah setelah dikumpulkan.");
   show("ovConfirm");
 }
 $("btnBatal").onclick = () => show("ovConfirm", false);
-$("btnYa").onclick = () => { show("ovConfirm", false); kumpulkan(false); };
+$("btnYa").onclick = () => { show("ovConfirm", false); if (S.pv) hasilPratinjau(); else kumpulkan(false); };
 $("btnRetry").onclick = () => kumpulkan(S.waktuHabis);
+
+let simpanT = null, simpanJalan = false, simpanLagi = false;
+function jadwalSimpan() { clearTimeout(simpanT); simpanT = setTimeout(simpanJawaban, 1500); }
+async function simpanJawaban() {
+  if (S.kirim || !S.sessionId || S.pv) return;
+  if (simpanJalan) { simpanLagi = true; return; }
+  simpanJalan = true;
+  try { const r = await api({ action: "save", sessionId: S.sessionId, jawaban: S.jawab }, 2); if (r.status && r.status !== "berjalan" && S.berjalan) diakhiriServer(r.status); } catch {}
+  simpanJalan = false;
+  if (simpanLagi) { simpanLagi = false; jadwalSimpan(); }
+}
 
 async function kumpulkan(waktuHabis) {
   if (S.kirim) return; S.kirim = true; S.waktuHabis = waktuHabis;
   tutupSemua(); S.berjalan = false;
-  show("ovFull", false); show("ovSend"); show("btnRetry", false);
+  show("ovFull", false); show("ovLayar", false); show("ovSend"); show("btnRetry", false);
   $("sendTitle").textContent = waktuHabis ? "Waktu habis. Mengirim jawaban…" : "Mengirim jawaban…";
   $("sendTxt").textContent = "Jangan tutup halaman ini.";
   try {
-    // kirim log kejadian (dengan foto) bertahap, lalu jawaban
+    if (rekKam || rekLay) { $("sendTxt").textContent = "Menyelesaikan rekaman… jangan tutup halaman ini."; await stopRekam(20000); }
     while (antri.length) { const b = antri.splice(0, 8); await api({ action: "events", sessionId: S.sessionId, events: b }, 3); }
     await api({ action: "submit", sessionId: S.sessionId, jawaban: S.jawab, events: [] }, 4);
-    selesai();
+    bersihkan();
+    show("ovSend", false); show("quiz", false); show("scrDone");
   } catch (e) {
     S.kirim = false;
     $("sendTitle").textContent = "Gagal mengirim";
-    $("sendTxt").textContent = "Periksa koneksi internet lalu tekan tombol di bawah. Jawabanmu masih tersimpan di perangkat ini.";
+    $("sendTxt").textContent = "Periksa koneksi internet lalu tekan tombol di bawah. Jawabanmu masih tersimpan.";
     show("btnRetry");
   }
 }
-function selesai() {
-  ["kuis_sesi", "kuis_jawab_" + S.sessionId, "kuis_cur_" + S.sessionId].forEach(LS.del);
-  if (stream) stream.getTracks().forEach(t => t.stop());
+function bersihkan() {
+  ["kuis_jawab_", "kuis_cur_"].forEach(k => LS.del(k + S.sessionId));
+  [stream, scrStream].forEach(s => s && s.getTracks().forEach(t => t.stop()));
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-  show("ovSend", false); show("quiz", false); show("scrDone");
+}
+function pesanSelesai(judul, teks) {
+  ["scrLogin", "scrSetup", "quiz", "ovFull", "ovLayar", "ovSend", "ovConfirm", "adminBar"].forEach(id => show(id, false));
+  $("doneJudul").textContent = judul; $("doneTxt").textContent = teks; show("scrDone");
 }
 </script>
 </body>
