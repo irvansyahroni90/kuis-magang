@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Laporan Kuis</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+  :root{--bg:#f3f5f8;--card:#fff;--ink:#1b2430;--muted:#5d6b7a;--line:#dde3ea;--pri:#1f5fa8;--pri-soft:#e6eef8;--ok:#2e8b57;--warn:#c77700;--bad:#c0392b}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Plus Jakarta Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1180px;margin:28px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px}
+  h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:0 0 12px}
+  .muted{color:var(--muted)} .small{font-size:13px}
+  .hidden{display:none!important}
+  input{padding:11px 13px;border:1px solid var(--line);border-radius:10px;font:inherit}
+  .btn{background:var(--pri);color:#fff;border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--pri);border:1px solid var(--pri)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  tr.click{cursor:pointer} tr.click:hover{background:var(--pri-soft)}
+  .num{font-variant-numeric:tabular-nums}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+  .Rendah{background:#e8f5e9;color:var(--ok)} .Sedang{background:#fff4e0;color:var(--warn)} .Tinggi{background:#fdecea;color:var(--bad)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:6px}
+  .stat{background:var(--bg);border-radius:10px;padding:12px 14px}
+  .stat b{display:block;font-size:24px}
+  .tl{width:100%;overflow-x:auto}
+  .ev{display:grid;grid-template-columns:80px 1fr 180px;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);align-items:start}
+  .ev .t{font-weight:700;font-variant-numeric:tabular-nums}
+  .ev img{width:180px;border-radius:8px;border:1px solid var(--line);cursor:zoom-in}
+  .ev .ph{width:180px;height:135px;border-radius:8px;background:var(--bg);display:grid;place-items:center;font-size:12px;color:var(--muted)}
+  .chip{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  .ok{color:var(--ok);font-weight:700}.no{color:var(--bad);font-weight:700}
+  .tabs{display:flex;gap:8px;margin-bottom:14px}
+  .tabs button{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
+  .tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+  #zoom{position:fixed;inset:0;background:rgba(0,0,0,.85);display:grid;place-items:center;z-index:9;cursor:zoom-out}
+  #zoom img{max-width:92vw;max-height:88vh;border-radius:10px}
+  .note{background:#fff8e6;border-left:4px solid var(--warn);padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px}
+  @media(max-width:700px){.ev{grid-template-columns:60px 1fr}.ev .fotoCol{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="scrPin" class="card" style="max-width:420px;margin:60px auto">
+    <h1>Laporan Kuis</h1>
+    <p class="muted">Halaman khusus pembimbing.</p>
+    <div style="display:flex;gap:10px"><input id="pin" type="password" placeholder="PIN admin" style="flex:1"><button class="btn" id="btnPin">Masuk</button></div>
+    <p id="errPin" style="color:var(--bad);font-weight:600"></p>
+  </div>
+
+  <div id="scrList" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div><h1>Hasil peserta</h1><div class="muted small" id="infoList"></div></div>
+        <button class="btn ghost" id="btnRefresh">Muat ulang</button>
+      </div>
+      <div id="berjalan" class="small" style="margin-top:10px"></div>
+      <table style="margin-top:12px">
+        <thead><tr><th>Nama</th><th>Topik</th><th class="num">Nilai</th><th class="num">Benar</th><th>Lama</th><th class="num">Kejadian</th><th>Risiko</th><th>Waktu kirim</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="scrDetail" class="hidden">
+    <button class="btn ghost" id="btnBack" style="margin-bottom:14px">← Kembali ke daftar</button>
+    <div class="card">
+      <h1 id="dNama"></h1>
+      <div class="muted small" id="dSub"></div>
+      <div class="stats" style="margin-top:16px" id="dStats"></div>
+      <div class="note">Catatan kejadian adalah <b>indikasi otomatis</b>, bukan bukti pasti. Periksa foto dan konteksnya sebelum mengambil kesimpulan.</div>
+    </div>
+    <div class="card">
+      <h2>Timeline kejadian</h2>
+      <div class="tl" id="tl"></div>
+      <div class="small" id="legend" style="margin-top:8px;line-height:2"></div>
+    </div>
+    <div class="card">
+      <div class="tabs"><button class="on" data-tab="evList">Rincian kejadian</button><button data-tab="jwList">Jawaban per soal</button></div>
+      <div id="evList"></div>
+      <div id="jwList" class="hidden"></div>
+    </div>
+  </div>
+</div>
+<div id="zoom" class="hidden"><img id="zoomImg" alt=""></div>
+
+<script>
+const CFG = window.KUIS_CONFIG;
+const $ = id => document.getElementById(id);
+const show = (id, on = true) => $(id).classList.toggle("hidden", !on);
+let PIN = sessionStorage.getItem("kuis_pin") || "";
+let DATA = null;
+
+const WARNA = {
+  "Wajah tidak terdeteksi": "#c0392b", "Lebih dari satu orang": "#8e1b10", "Menunduk": "#d68910", "Pandangan ke bawah": "#f0b74a",
+  "Menoleh ke samping": "#7d5ba6", "Mendongak": "#a98fd1", "HP terdeteksi": "#e01e5a", "Buku terdeteksi": "#b5179e",
+  "Keluar dari jendela kuis": "#1f5fa8", "Keluar layar penuh": "#5b8fd1", "Copy/paste": "#2e8b57", "Kamera mati": "#333333",
+  "Halaman dimuat ulang": "#7f8c8d", "Monitor tambahan": "#16a085", "Tombol terlarang": "#27ae60", "Foto rutin": "#b0bec5"
+};
+const warna = j => WARNA[j] || "#888";
+const mmss = d => { d = Math.max(0, Math.round(d)); return String(Math.floor(d / 60)).padStart(2, "0") + ":" + String(d % 60).padStart(2, "0"); };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const tgl = v => { const d = new Date(v); return isNaN(d) ? esc(v) : d.toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }); };
+
+async function api(body) {
+  const r = await fetch(CFG.API_URL, { method: "POST", body: JSON.stringify({ ...body, pin: PIN }) });
+  const j = await r.json(); if (!j.ok) throw new Error(j.error || "Gagal"); return j;
+}
+
+$("btnPin").onclick = async () => {
+  PIN = $("pin").value.trim(); $("errPin").textContent = "";
+  try { await muatDaftar(); sessionStorage.setItem("kuis_pin", PIN); } catch (e) { $("errPin").textContent = e.message; }
+};
+$("pin").addEventListener("keydown", e => { if (e.key === "Enter") $("btnPin").click(); });
+$("btnRefresh").onclick = () => muatDaftar();
+$("btnBack").onclick = () => { show("scrDetail", false); show("scrList"); };
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  show("evList", b.dataset.tab === "evList"); show("jwList", b.dataset.tab === "jwList");
+});
+$("zoom").onclick = () => show("zoom", false);
+
+async function muatDaftar() {
+  DATA = await api({ action: "admin_list" });
+  show("scrPin", false); show("scrDetail", false); show("scrList");
+  $("infoList").textContent = DATA.hasil.length + " peserta sudah mengumpulkan · urut dari nilai tertinggi";
+  $("berjalan").innerHTML = DATA.berjalan.length ? "<b>Sedang mengerjakan:</b> " + DATA.berjalan.map(b => esc(b.nama) + " (mulai " + tgl(b.mulai) + ")").join(", ") : "";
+  const rows = DATA.hasil.slice().sort((a, b) => b.nilai - a.nilai);
+  $("tbody").innerHTML = rows.length ? "" : '<tr><td colspan="8" class="muted">Belum ada hasil.</td></tr>';
+  rows.forEach(h => {
+    const tr = document.createElement("tr"); tr.className = "click";
+    tr.innerHTML = `<td><b>${esc(h.nama)}</b>${h.catatan ? `<div class="small" style="color:var(--bad)">${esc(h.catatan)}</div>` : ""}</td>
+      <td>${esc(h.topik)}</td><td class="num"><b>${esc(h.nilai)}</b></td><td class="num">${h.benar}/${h.jumlah}</td><td class="num">${esc(h.lama)}</td>
+      <td class="num">${h.totalKejadian}</td><td><span class="badge ${esc(h.tingkat)}">${esc(h.tingkat)}</span> <span class="small muted">(${h.skor})</span></td><td class="small">${tgl(h.waktu)}</td>`;
+    tr.onclick = () => bukaDetail(h);
+    $("tbody").appendChild(tr);
+  });
+}
+
+async function bukaDetail(h) {
+  show("scrList", false); show("scrDetail");
+  $("dNama").textContent = h.nama;
+  $("dSub").textContent = `${h.topik} · dikirim ${new Date(h.waktu).toLocaleString("id-ID")} · lama mengerjakan ${h.lama}`;
+  $("dStats").innerHTML = `
+    <div class="stat"><span class="small muted">Nilai</span><b>${esc(h.nilai)}</b></div>
+    <div class="stat"><span class="small muted">Benar / Salah / Kosong</span><b>${h.benar} / ${h.salah} / ${h.kosong}</b></div>
+    <div class="stat"><span class="small muted">Kejadian tercatat</span><b>${h.totalKejadian}</b></div>
+    <div class="stat"><span class="small muted">Risiko kecurangan</span><b><span class="badge ${esc(h.tingkat)}" style="font-size:15px">${esc(h.tingkat)}</span></b></div>`;
+  $("tl").innerHTML = '<p class="muted">Memuat…</p>'; $("evList").innerHTML = ""; $("jwList").innerHTML = "";
+  let d;
+  try { d = await api({ action: "admin_detail", sessionId: h.sessionId }); }
+  catch (e) { $("tl").innerHTML = `<p style="color:var(--bad)">${esc(e.message)}</p>`; return; }
+  gambarTimeline(d.log, DATA.durasi);
+  daftarKejadian(d.log);
+  daftarJawaban(d.jawaban);
+}
+
+function gambarTimeline(log, durasi) {
+  const jenis = [...new Set(log.filter(e => e.jenis !== "Foto rutin").map(e => e.jenis))];
+  if (!jenis.length) { $("tl").innerHTML = '<p class="muted">Tidak ada kejadian mencurigakan tercatat.</p>'; $("legend").innerHTML = ""; return; }
+  const W = 1000, kiri = 190, kanan = 20, lane = 28, atas = 26, H = atas + jenis.length * lane + 10;
+  const x = t => kiri + (Math.min(t, durasi) / durasi) * (W - kiri - kanan);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:720px;font-family:inherit">`;
+  for (let m = 0; m <= durasi / 60; m += 5) {
+    s += `<line x1="${x(m * 60)}" x2="${x(m * 60)}" y1="${atas - 6}" y2="${H - 6}" stroke="#e3e8ee"/>`;
+    s += `<text x="${x(m * 60)}" y="14" font-size="11" text-anchor="middle" fill="#5d6b7a">${m}′</text>`;
+  }
+  jenis.forEach((j, i) => {
+    const y = atas + i * lane;
+    s += `<text x="${kiri - 10}" y="${y + 17}" font-size="12" text-anchor="end" fill="#1b2430">${esc(j)}</text>`;
+    s += `<rect x="${kiri}" y="${y + 6}" width="${W - kiri - kanan}" height="16" fill="#f3f5f8" rx="3"/>`;
+    log.filter(e => e.jenis === j).forEach(e => {
+      const w = Math.max(4, x(e.selesai) - x(e.mulai));
+      s += `<rect x="${x(e.mulai)}" y="${y + 6}" width="${w}" height="16" rx="3" fill="${warna(j)}"><title>${esc(j)} · ${mmss(e.mulai)}–${mmss(e.selesai)} (${e.durasi} dtk)</title></rect>`;
+    });
+  });
+  $("tl").innerHTML = s + "</svg>";
+  $("legend").innerHTML = '<span class="muted">Sumbu horizontal: menit sejak kuis dimulai. Arahkan kursor ke blok untuk melihat detik pastinya.</span>';
+}
+
+function daftarKejadian(log) {
+  const box = $("evList");
+  if (!log.length) { box.innerHTML = '<p class="muted">Tidak ada kejadian.</p>'; return; }
+  box.innerHTML = log.map((e, i) => `
+    <div class="ev">
+      <div class="t">${mmss(e.mulai)}</div>
+      <div><span class="chip" style="background:${warna(e.jenis)}"></span><b>${esc(e.jenis)}</b>
+        <div class="small muted">${e.durasi > 0 ? "berlangsung " + e.durasi + " detik (" + mmss(e.mulai) + " – " + mmss(e.selesai) + ")" : "sesaat"}${e.ket ? " · " + esc(e.ket) : ""}</div></div>
+      <div class="fotoCol">${e.fileId ? `<div class="ph" id="ph${i}">Memuat foto…</div>` : '<div class="small muted">Tanpa foto</div>'}</div>
+    </div>`).join("");
+  // muat foto bertahap (3 sekaligus)
+  const antri = log.map((e, i) => ({ e, i })).filter(o => o.e.fileId);
+  const kerja = async () => {
+    while (antri.length) {
+      const { e, i } = antri.shift();
+      try {
+        const r = await api({ action: "admin_foto", fileId: e.fileId });
+        const el = $("ph" + i); if (!el) continue;
+        const img = new Image(); img.src = r.dataUrl; img.alt = e.jenis;
+        img.onclick = () => { $("zoomImg").src = r.dataUrl; show("zoom"); };
+        el.replaceWith(img);
+      } catch { const el = $("ph" + i); if (el) el.textContent = "Foto gagal dimuat"; }
+    }
+  };
+  kerja(); kerja(); kerja();
+}
+
+function daftarJawaban(list) {
+  if (!list.length) { $("jwList").innerHTML = '<p class="muted">Data jawaban tidak tersedia.</p>'; return; }
+  const per = {};
+  list.forEach(j => { const t = j.tingkat || "-"; per[t] = per[t] || { b: 0, n: 0 }; per[t].n++; if (j.jawab === j.kunci) per[t].b++; });
+  let s = '<div class="small muted" style="margin-bottom:10px">' + Object.keys(per).map(t => `${esc(t)}: ${per[t].b}/${per[t].n} benar`).join(" · ") + "</div>";
+  s += "<table><thead><tr><th>#</th><th>Soal</th><th>Jawaban</th><th>Kunci</th><th></th></tr></thead><tbody>";
+  list.forEach((j, i) => {
+    const ok = j.jawab && j.jawab === j.kunci;
+    s += `<tr><td class="num">${i + 1}</td><td><div class="small muted">${esc(j.id)} · ${esc(j.tingkat)}</div>${esc(j.soal)}</td>
+      <td>${j.jawab ? esc(j.teksJawab) : '<span class="muted">— kosong —</span>'}</td><td>${esc(j.teksKunci)}</td>
+      <td>${ok ? '<span class="ok">✓</span>' : '<span class="no">✗</span>'}</td></tr>`;
+  });
+  $("jwList").innerHTML = s + "</tbody></table>";
+}
+
+if (PIN) muatDaftar().catch(() => { show("scrPin"); });
+</script>
+</body>
+</html>
