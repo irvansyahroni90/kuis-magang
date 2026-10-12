@@ -77,6 +77,11 @@
   #adminBar .sp{flex:1}
   .hasil-list{text-align:left;max-height:50vh;overflow:auto;margin:12px 0;font-size:14px}
   .hasil-list div{padding:6px 0;border-bottom:1px solid var(--line)}
+  .kpilih{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;color:var(--ink)}
+  .kpilih:hover:not(:disabled){border-color:var(--pri);background:var(--pri-soft)}
+  .kpilih:disabled{opacity:.55;cursor:not-allowed}
+  .kpilih b{font-size:16px}.kpilih .small{display:block;margin-top:4px}
+  .kuisnama{font-weight:700;color:var(--pri);text-align:center;margin-bottom:6px;font-size:14px}
   @media (max-width:900px){#quiz{grid-template-columns:1fr;gap:12px;padding:0 10px}.side{display:contents}.c-timer{order:-1}.side .card{margin-bottom:0}}
 </style>
 </head>
@@ -116,7 +121,7 @@
         <li>Waktu pengerjaan dibatasi dan jawaban otomatis terkirim saat waktu habis.</li>
         <li>Kuis berjalan dalam <b>layar penuh</b>. Jangan membuka tab, jendela, atau aplikasi lain.</li>
         <li id="ruleKamera"><b>Kamera aktif selama kuis</b>. Foto diambil berkala dan saat ada aktivitas mencurigakan, dan dapat dipantau langsung oleh pembimbing.</li>
-        <li id="ruleLayar" class="hidden">Kamu diminta <b>membagikan seluruh layar</b>; tampilan layar dipantau pembimbing selama kuis.</li>
+        <li id="ruleLayar">Kamu diminta <b>membagikan seluruh layar</b>; tampilan layar dipantau pembimbing selama kuis.</li>
         <li id="ruleRekam" class="hidden">Kamera dan/atau layar <b>direkam</b> selama kuis untuk ditinjau pembimbing.</li>
         <li>Dilarang menggunakan HP, buku, catatan, atau bantuan orang lain.</li>
       </ul>
@@ -124,6 +129,17 @@
     <label class="row small"><input id="inSetuju" type="checkbox"> Saya memahami aturan dan menyetujui pemantauan selama kuis.</label>
     <div class="err" id="errLogin"></div>
     <button class="btn" id="btnLogin">Lanjut</button>
+  </div>
+</div>
+
+<!-- 1b. PILIH KUIS -->
+<div id="scrPilih" class="wrap hidden">
+  <div class="card">
+    <h2>Pilih kuis</h2>
+    <p class="muted small" id="pilihInfo">Ada lebih dari satu kuis untukmu. Pilih kuis yang akan dikerjakan sekarang.</p>
+    <div id="pilihList"></div>
+    <div class="err" id="errPilih"></div>
+    <button class="btn ghost" id="btnPilihKembali">← Kembali</button>
   </div>
 </div>
 
@@ -165,7 +181,7 @@
     </div>
   </main>
   <aside class="side">
-    <div class="card c-timer"><div class="muted small" style="text-align:center">Sisa waktu</div><div class="timer" id="timer">--:--</div></div>
+    <div class="card c-timer"><div class="kuisnama" id="kuisNama"></div><div class="muted small" style="text-align:center">Sisa waktu</div><div class="timer" id="timer">--:--</div></div>
     <div class="card hidden" id="camCard">
       <div class="mini" id="miniCam"><video id="vidMini" playsinline muted></video></div>
       <div class="small" style="margin-top:8px" id="camRow"><span class="dot" id="camDot"></span><span id="camTxt">Kamera aktif</span></div>
@@ -279,9 +295,9 @@ async function mulaiPratinjau() {
   const req = LS.get("kuis_preview") || {};
   const ids = QS.get("id") ? [QS.get("id")] : (req.ids && req.ids.length ? req.ids : null);
   let r;
-  try { r = await api({ action: "admin_preview", token: adm.token, ids, topik: req.topik || null }, 2); }
+  try { r = await api({ action: "admin_preview", token: adm.token, ids, kuisId: req.kuisId || null, set: req.set || null, semua: !!req.semua }, 2); }
   catch (e) { return pesanSelesai("Pratinjau gagal dimuat", e.message); }
-  document.title = "Pratinjau · " + r.judul;
+  document.title = "Pratinjau · " + r.judul; $("kuisNama").textContent = r.judul;
   S.pv = true; S.pvData = r; S.pvKunci = false; S.pvJeda = false;
   AW.acakOpsi = r.acakOpsi;
   siapkanPratinjau(Date.now().toString());
@@ -336,24 +352,10 @@ function initLogin() {
 }
 let infoT = null;
 async function muatInfo() {
-  try {
-    const r = await api({ action: "info" }, 1);
-    $("judul").textContent = r.judul; document.title = r.judul;
-    if (r.awas) { show("ruleKamera", r.awas.kamera); show("ruleLayar", r.awas.layar !== "Tidak"); show("ruleRekam", !!r.awas.rekam); }
-    const st = r.status, el = $("statusKuis");
-    el.className = "status " + st.kode; el.textContent = (r.topik ? "Topik: " + r.topik + " · " : "") + st.pesan;
-    clearInterval(infoT);
-    if (st.kode === "menunggu") {
-      const target = Date.now() + st.dalam * 1000;
-      infoT = setInterval(() => {
-        const d = (target - Date.now()) / 1000;
-        if (d <= 0) { clearInterval(infoT); muatInfo(); return; }
-        el.textContent = "Topik: " + r.topik + " · " + st.pesan + " Dimulai dalam " + fmtWaktu(d);
-      }, 1000);
-    }
-  } catch { /* status opsional */ }
+  try { const r = await api({ action: "info" }, 1); $("judul").textContent = r.judul; document.title = r.judul; } catch { /* opsional */ }
 }
 
+let KRED = null;
 $("btnLogin").onclick = async () => {
   $("errLogin").textContent = "";
   const isian = $("inNama").value.trim(), kode = $("inToken").value.trim().toUpperCase(), ujiPin = $("inUjiPin").value.trim();
@@ -361,27 +363,43 @@ $("btnLogin").onclick = async () => {
   if (isian.length < 2) return $("errLogin").textContent = MODE_UJI ? "Nama wajib diisi." : "Username wajib diisi.";
   if (MODE_UJI && !ujiPin) return $("errLogin").textContent = "PIN admin wajib diisi untuk mode uji.";
   if (!MODE_UJI && !kode) return $("errLogin").textContent = "Kode akses wajib diisi.";
-  $("btnLogin").disabled = true; $("btnLogin").textContent = "Memuat soal…";
+  KRED = MODE_UJI ? { action: "start", nama: isian, ujiPin } : { action: "start", username: isian, kode };
+  $("btnLogin").disabled = true; $("btnLogin").textContent = "Memuat…";
   try {
-    const r = await api(MODE_UJI ? { action: "start", nama: isian, ujiPin } : { action: "start", username: isian, kode });
-    AW = Object.assign(AW, r.awas || {}); TH = SENS[AW.sens] || SENS.Normal;
-    S.sessionId = r.sessionId; S.nama = r.nama; S.uji = r.uji === true; S.lanjut = r.lanjut;
-    S.deadline = Date.now() + r.sisa * 1000;
-    S.startEpoch = Date.now() - (r.elapsed || 0) * 1000;
-    S.soal = r.soal.map(q => ({ ...q, order: AW.acakOpsi ? shuffled(ABCDE, seedFrom(r.sessionId + q.id)) : ABCDE.slice() }));
-    S.jawab = Object.assign({}, r.jawaban || {}, LS.get("kuis_jawab_" + r.sessionId) || {});
-    S.cur = LS.get("kuis_cur_" + r.sessionId) || 0;
     if (!MODE_UJI) LS.set("kuis_akun", { username: isian });
-    clearInterval(infoT);
-    if (r.sisa <= 0) { show("scrLogin", false); return kumpulkan(true); }
-    show("scrLogin", false); show("scrSetup");
-    $("setupJudul").textContent = S.lanjut ? "Melanjutkan kuis · sisa " + Math.floor(r.sisa / 60) + " menit" : "Persiapan";
-    siapkanLangkah();
-  } catch (e) {
-    $("errLogin").textContent = e.message || "Gagal terhubung ke server.";
-    $("btnLogin").disabled = false; $("btnLogin").textContent = "Lanjut";
-  }
+    await mulaiDari(await api(KRED));
+  } catch (e) { $("errLogin").textContent = e.message || "Gagal terhubung ke server."; }
+  $("btnLogin").disabled = false; $("btnLogin").textContent = "Lanjut";
 };
+async function mulaiDari(r) {
+  if (r.pilih) return tampilPilihan(r.pilih);
+  AW = Object.assign(AW, r.awas || {}); TH = SENS[AW.sens] || SENS.Normal;
+  S.sessionId = r.sessionId; S.nama = r.nama; S.uji = r.uji === true; S.lanjut = r.lanjut; S.kuisNama = r.kuisNama || "";
+  S.deadline = Date.now() + r.sisa * 1000;
+  S.startEpoch = Date.now() - (r.elapsed || 0) * 1000;
+  S.soal = r.soal.map(q => ({ ...q, order: AW.acakOpsi ? shuffled(ABCDE, seedFrom(r.sessionId + q.id)) : ABCDE.slice() }));
+  S.jawab = Object.assign({}, r.jawaban || {}, LS.get("kuis_jawab_" + r.sessionId) || {});
+  S.cur = LS.get("kuis_cur_" + r.sessionId) || 0;
+  $("kuisNama").textContent = S.kuisNama; document.title = S.kuisNama || document.title;
+  ["scrLogin", "scrPilih"].forEach(id => show(id, false));
+  if (r.sisa <= 0) return kumpulkan(true);
+  show("scrSetup");
+  $("setupJudul").textContent = (S.lanjut ? "Melanjutkan · " : "Persiapan · ") + S.kuisNama + (S.lanjut ? " · sisa " + Math.floor(r.sisa / 60) + " menit" : "");
+  siapkanLangkah();
+}
+function tampilPilihan(list) {
+  show("scrLogin", false); show("scrPilih"); $("errPilih").textContent = "";
+  const lbl = { dibuka: "Dibuka", menunggu: "Belum dibuka", ditutup: "Ditutup", selesai: "Sudah ditutup", sudah: "Sudah dikerjakan" };
+  $("pilihList").innerHTML = list.map((k, i) => `<button class="kpilih" data-i="${i}" ${k.bisa ? "" : "disabled"}><b>${esc(k.nama)}</b>
+    <span class="small muted">${esc(k.topik)} · ${k.jumlah} soal · ${k.durasiMenit} menit · ${esc(MODE_UJI ? "Mode uji" : (lbl[k.status] || k.pesan))}${!k.bisa && k.pesan && k.status !== "sudah" ? " — " + esc(k.pesan) : ""}</span></button>`).join("");
+  $("pilihList").querySelectorAll("[data-i]").forEach(b => b.onclick = async () => {
+    const k = list[+b.dataset.i];
+    $("pilihList").querySelectorAll("button").forEach(x => x.disabled = true); $("errPilih").textContent = "Memuat soal…";
+    try { await mulaiDari(await api({ ...KRED, kuisId: k.id })); }
+    catch (e) { $("errPilih").textContent = e.message; tampilPilihan(list); $("errPilih").textContent = e.message; }
+  });
+}
+$("btnPilihKembali").onclick = () => { show("scrPilih", false); show("scrLogin"); };
 
 /* ================= 2. PERSIAPAN ================= */
 const bisaLayar = () => !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
@@ -776,7 +794,7 @@ function bersihkan() {
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
 }
 function pesanSelesai(judul, teks) {
-  ["scrLogin", "scrSetup", "quiz", "ovFull", "ovLayar", "ovSend", "ovConfirm", "adminBar"].forEach(id => show(id, false));
+  ["scrLogin", "scrPilih", "scrSetup", "quiz", "ovFull", "ovLayar", "ovSend", "ovConfirm", "adminBar"].forEach(id => show(id, false));
   $("doneJudul").textContent = judul; $("doneTxt").textContent = teks; show("scrDone");
 }
 </script>
